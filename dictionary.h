@@ -1,5 +1,6 @@
 typedef struct dictionary {
-	
+	char *nombre;
+	hijo *h[];
 } Dictionary;
 
 typedef enum {true, false} Bool;
@@ -7,11 +8,11 @@ typedef enum {true, false} Bool;
 // Creates a new empty dictionary
 Dictionary *newDictionary();
 
-// Saves the number associated to the corresponding key in result. 
+// Saves the number associated to the corresponding key in result.
 // Returns 1 if it was able to get it otherwise returns 0
 int getNumber(const Dictionary *dictionary, const char *key, double *result);
 
-// Saves the boolean associated to the corresponding key in result. 
+// Saves the boolean associated to the corresponding key in result.
 // Returns 1 if it was able to get it otherwise returns 0
 int getBool(const Dictionary *dictionary, const char *key, Bool *result);
 
@@ -36,35 +37,35 @@ Dictionary **getDictionaryArray(const Dictionary *dictionary, const char *key, i
 // Removes the given key. Returns 1 if it was able to do it otherwise returns 0
 int removeElement(Dictionary *dictionary, const char *key);
 
-// Sets a number for the given key, if the key does not exists it creates it else it overrides the previous value. 
+// Sets a number for the given key, if the key does not exists it creates it else it overrides the previous value.
 // Returns 1 if it was able to do it otherwise returns 0
 int setNumber(Dictionary *dictionary, const char *key, double value);
 
-// Sets a boolean for the given key, if the key does not exists it creates it else it overrides the previous value. 
+// Sets a boolean for the given key, if the key does not exists it creates it else it overrides the previous value.
 // Returns 1 if it was able to do it otherwise returns 0
 int setBool(Dictionary *dictionary, const char *key, Bool value);
 
-// Sets a string for the given key, if the key does not exists it creates it else it overrides the previous value. 
+// Sets a string for the given key, if the key does not exists it creates it else it overrides the previous value.
 // Returns 1 if it was able to do it otherwise returns 0
 int setString(Dictionary *dictionary, const char *key, const char *value);
 
-// Sets a dictionary for the given key, if the key does not exists it creates it else it overrides the previous value. 
+// Sets a dictionary for the given key, if the key does not exists it creates it else it overrides the previous value.
 // Returns 1 if it was able to do it otherwise returns 0
 int setDictionary(Dictionary *dictionary, const char *key, Dictionary *value);
 
-// Sets a numeric array for the given key, if the key does not exists it creates it else it overrides the previous value. 
+// Sets a numeric array for the given key, if the key does not exists it creates it else it overrides the previous value.
 // Returns 1 if it was able to do it otherwise returns 0
 int setNumberArray(Dictionary *dictionary, const char *key, int size, double value[size]);
 
-// Sets a boolean array for the given key, if the key does not exists it creates it else it overrides the previous value. 
+// Sets a boolean array for the given key, if the key does not exists it creates it else it overrides the previous value.
 // Returns 1 if it was able to do it otherwise returns 0
 int setBoolArray(Dictionary *dictionary, const char *key, int size, Bool value[size]);
 
-// Sets an array of strings for the given key, if the key does not exists it creates it else it overrides the previous value. 
+// Sets an array of strings for the given key, if the key does not exists it creates it else it overrides the previous value.
 // Returns 1 if it was able to do it otherwise returns 0
 int setStringArray(Dictionary *dictionary, const char *key, int size, char *value[size]);
 
-// Sets an array of dictionaries for the given key, if the key does not exists it creates it else it overrides the previous value. 
+// Sets an array of dictionaries for the given key, if the key does not exists it creates it else it overrides the previous value.
 // Returns 1 if it was able to do it otherwise returns 0
 int setDictionaryArray(Dictionary *dictionary, const char *key, int size, Dictionary *value[size]);
 
