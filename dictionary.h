@@ -12,7 +12,7 @@ typedef struct key{
 
 typedef struct dictionary {
 	char *nombre;
-	Keynode *k;
+	Keynode *kfirst;
 } Dictionary;
 
 // Creates a new empty dictionary
