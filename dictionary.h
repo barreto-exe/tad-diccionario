@@ -1,9 +1,19 @@
+typedef enum {true, false} Bool;
+
+typedef struct key{
+   char *name;
+
+   int tipo, cantElem; //Cantidad de elementos (arreglo dinámico)
+   double *d;
+   Bool *b;
+   char *s;
+   struct key *next;
+} Keynode;
+
 typedef struct dictionary {
 	char *nombre;
-	hijo *h[];
+	Keynode *k;
 } Dictionary;
-
-typedef enum {true, false} Bool;
 
 // Creates a new empty dictionary
 Dictionary *newDictionary();

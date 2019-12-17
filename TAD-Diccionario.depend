@@ -1,0 +1,7 @@
+# depslib dependency file v1.0
+1576588254 source:/media/sf_AyP_II/Proyecto2/TAD-Diccionario/dictionary.c
+	"dictionary.h"
+	<stdlib.h>
+
+1576588964 /media/sf_AyP_II/Proyecto2/TAD-Diccionario/dictionary.h
+
