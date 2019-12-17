@@ -37,7 +37,7 @@ int tipoDatoCadena(const char *s){
 int setNumber(Dictionary *d, const char *key, double value){
    if(!d) return 0;
 
-
+   return 1;
 }
 
 
