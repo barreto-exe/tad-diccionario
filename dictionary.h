@@ -7,6 +7,7 @@ typedef struct key{
    double *d;
    Bool *b;
    char *s;
+   Dictionary ?!?!?!???!?
    struct key *next;
 } Keynode;
 

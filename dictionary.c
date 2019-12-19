@@ -55,12 +55,12 @@ int setNumber(Dictionary *d, const char *key, double value)
    Keynode *newk = (Keynode *) malloc(sizeof(Keynode));
 
    //Reservo espacio para el nombre, para evitar apuntar al const key.
-   char *name = (char *) malloc(strlen(key)+1);
+   char *name = (char *) malloc(sizeof(char)*strlen(key)+1);
    strcpy(name,key);
    newk->name = name;
 
    //Lo mismo aplica para el valor.
-   double *newValue = (double *) malloc(double);
+   double *newValue = (double *) malloc(sizeof(double));
    *newValue = value;
    newk->d = newValue;
 
@@ -82,7 +82,6 @@ int setNumber(Dictionary *d, const char *key, double value)
    return 1;
 }
 
-
 int setBool(Dictionary *d, const char *key, Bool value);
 {
    if(!d) return 0;
@@ -90,14 +89,81 @@ int setBool(Dictionary *d, const char *key, Bool value);
    Keynode *newk = (Keynode *) malloc(sizeof(Keynode));
 
    //Reservo espacio para el nombre, para evitar apuntar al const key.
-   char *name = (char *) malloc(strlen(key)+1);
+   char *name = (char *) malloc(sizeof(char)*strlen(key)+1);
    strcpy(name,key);
    newk->name = name;
 
    //Lo mismo aplica para el valor.
-   Bool *newValue = (Bool *) malloc(Bool);
+   Bool *newValue = (Bool *) malloc(sizeof(Bool));
    *newValue = value;
    newk->b = newValue;
+
+   newk->cantElem = 1;
+   newk->next = NULL;
+
+
+   if(!d->kfirst)
+   {
+      d->kfirst = newk;
+   }
+   else
+   {
+      Keynode *aux = d->kfirst;
+      while(aux->next) aux = aux->next; //Me posiciono en el último Keynode.
+      aux->next = newk;
+   }
+
+   return 1;
+}
+
+int setString(Dictionary *dictionary, const char *key, const char *value);
+{
+   if(!d) return 0;
+
+   Keynode *newk = (Keynode *) malloc(sizeof(Keynode));
+
+   //Reservo espacio para el nombre, para evitar apuntar al const key.
+   char *name = (char *) malloc(sizeof(char)*strlen(key)+1);
+   strcpy(name,key);
+   newk->name = name;
+
+   //Lo mismo aplica para el valor.
+   char *newValue = (char *) malloc(sizeof(char)*strlen(value)+1));
+   strcpy(newValue,value);
+   newk->s = newValue;
+
+   newk->cantElem = 1;
+   newk->next = NULL;
+
+   if(!d->kfirst)
+   {
+      d->kfirst = newk;
+   }
+   else
+   {
+      Keynode *aux = d->kfirst;
+      while(aux->next) aux = aux->next; //Me posiciono en el último Keynode.
+      aux->next = newk;
+   }
+
+   return 1;
+}
+
+int setDictionary(Dictionary *dictionary, const char *key, Dictionary *value);
+{
+   if(!d) return 0;
+
+   Keynode *newk = (Keynode *) malloc(sizeof(Keynode));
+
+   //Reservo espacio para el nombre, para evitar apuntar al const key.
+   char *name = (char *) malloc(sizeof(char)*strlen(key)+1);
+   strcpy(name,key);
+   newk->name = name;
+
+   //Lo mismo aplica para el valor.
+   Dictionary *newValue = (Dictionary *) malloc(sizeof(Dictionary));
+   *newValue = value;
+   newk->d = newValue;
 
    newk->cantElem = 1;
    newk->next = NULL;
