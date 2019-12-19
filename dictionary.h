@@ -7,13 +7,13 @@ typedef struct key{
    double *d;
    Bool *b;
    char *s;
-   Dictionary ?!?!?!???!?
+   struct dictionary *D;
    struct key *next;
 } Keynode;
 
 typedef struct dictionary {
 	char *nombre;
-	Keynode *kfirst;
+	struct key *kfirst;
 } Dictionary;
 
 // Creates a new empty dictionary

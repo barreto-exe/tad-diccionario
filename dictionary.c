@@ -82,7 +82,7 @@ int setNumber(Dictionary *d, const char *key, double value)
    return 1;
 }
 
-int setBool(Dictionary *d, const char *key, Bool value);
+int setBool(Dictionary *d, const char *key, Bool value)
 {
    if(!d) return 0;
 
@@ -116,7 +116,7 @@ int setBool(Dictionary *d, const char *key, Bool value);
    return 1;
 }
 
-int setString(Dictionary *dictionary, const char *key, const char *value);
+int setString(Dictionary *d, const char *key, const char *value)
 {
    if(!d) return 0;
 
@@ -128,7 +128,7 @@ int setString(Dictionary *dictionary, const char *key, const char *value);
    newk->name = name;
 
    //Lo mismo aplica para el valor.
-   char *newValue = (char *) malloc(sizeof(char)*strlen(value)+1));
+   char *newValue = (char *) malloc(sizeof(char)*strlen(value)+1);
    strcpy(newValue,value);
    newk->s = newValue;
 
@@ -149,7 +149,8 @@ int setString(Dictionary *dictionary, const char *key, const char *value);
    return 1;
 }
 
-int setDictionary(Dictionary *dictionary, const char *key, Dictionary *value);
+int setDictionary(Dictionary *d, const char *key, Dictionary *value)
+//Coloqué muchos comentarios en esta función porque es más o menos confusa.
 {
    if(!d) return 0;
 
@@ -160,14 +161,36 @@ int setDictionary(Dictionary *dictionary, const char *key, Dictionary *value);
    strcpy(name,key);
    newk->name = name;
 
-   //Lo mismo aplica para el valor.
+   //Reservo espacio para la estructura que será hija de Dictionary d.
    Dictionary *newValue = (Dictionary *) malloc(sizeof(Dictionary));
-   *newValue = value;
-   newk->d = newValue;
 
+   //Reservo espacio para el nombre de la estrucutra
+   newValue->nombre = (char *) malloc(sizeof(char)*strlen(value->nombre)+1);
+
+   //Copio el nombre de la estructura
+   strcpy(newValue->nombre,value->nombre);
+
+   //Hago copia de primer Keynode de value en newValue
+   Keynode *recorreValue = value->kfirst;
+   newValue->kfirst  = (Keynode *) malloc(sizeof(Keynode));
+
+   //Todo lo que está dentro de value del user estara dentro del first del new
+   *newValue->kfirst =  *recorreValue; //No considero que recorreValue (dicionario) sea nulo, el profe dijo que eso no pasaría xd.
+
+  //Hago copia de todos los Keynodes en newValue
+   Keynode *recorreNew = newValue->kfirst;
+
+   while(recorreValue->next)
+   {
+      recorreValue = recorreValue->next;
+      recorreNew->next = (Keynode *) malloc(sizeof(Keynode));
+      *recorreNew->next = *recorreValue;
+      recorreNew = recorreNew->next;
+   }
+
+   newk->D = newValue;
    newk->cantElem = 1;
    newk->next = NULL;
-
 
    if(!d->kfirst)
    {
