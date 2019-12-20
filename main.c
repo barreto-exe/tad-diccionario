@@ -3,15 +3,18 @@
 
 void testProfe();
 
-int main() {
+int main()
+{
 	return 0;
 }
 
-void test1(){
+void test1()
+{
 
 }
 
-void testProfe(){
+void testProfe()
+{
 	Dictionary *d1, *d2;
 	double v1,v2;
 

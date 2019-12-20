@@ -5,16 +5,18 @@ typedef enum {true, false} Bool;
 typedef struct key{
    char *name;
 
-   int tipo, cantElem; //Cantidad de elementos (arreglo dinámico)
-   double *d;
-   Bool *b;
-   char *s;
+   int tipo, cantElem;     //Tipo de dato del Keynode, Cantidad de elementos (arreglo dinámico).
+   double *d;              //Tipo Numérico.
+   Bool *b;                //Tipo Booleano.
+   char *s;                //Tipo Cadena.
+   char **sa;               //Tipo arreglo de Cadenas.
+   struct dictionary *D;   //Tipo Diccionario.
    struct key *next;
 } Keynode;
 
 typedef struct dictionary {
 	char *nombre;
-	Keynode *k;
+	struct key *kfirst;
 } Dictionary;
 
 /*
