@@ -3,10 +3,22 @@
 
 void testProfe();
 
-int main()
-{
-	return 0;
+void TestMamaPipe(){
+   Dictionary *d;
+   d = newDictionary();
+   setNumber(d,"MiPene",30.5);
+   setBool(d,"Miculo",false);
+   double resultado;
+   printf(" Pudo: %d\n",getNumber(d,"MiPene",&resultado));
+   printf("%lf",resultado);
 }
+
+int main(){
+   TestMamaPipe();
+   return 0;
+
+}
+
 
 void test1()
 {

@@ -5,3 +5,15 @@
 
 1576588964 /media/sf_AyP_II/Proyecto2/TAD-Diccionario/dictionary.h
 
+1576882594 source:/media/sf_Programacion/3er Semestre/Proyecto 2/TAD-Diccionario/main.c
+	<stdio.h>
+	"dictionary.h"
+
+1576881126 /media/sf_Programacion/3er Semestre/Proyecto 2/TAD-Diccionario/dictionary.h
+	<string.h>
+
+1576882513 source:/media/sf_Programacion/3er Semestre/Proyecto 2/TAD-Diccionario/dictionary.c
+	"dictionary.h"
+	<stdlib.h>
+	<string.h>
+

@@ -48,7 +48,58 @@ int tipoDatoCadena(const char *s)
    return tipo;
 }
 
-int setNumberArray(Dictionary *dictionary, const char *key, int size, double value[size])
+Keynode *getGeneral(const Dictionary *dictionary, const char *key,Keynode *p,int type,int amount){
+   if(p == NULL)
+      return NULL;
+   for(int i=0; i<amount && p != NULL ; i++){ //No estoy muy seguro como se maneja esa parte de los arreglos dinamicos
+      int tiposAux = p->tipo;
+      char KeyAux[30];
+      strcpy(KeyAux,p->name);
+      if(strcmp(key,p->name) == 0 && p->tipo == type)
+         return p;
+      getGeneral(dictionary,key,p->next,type,p->next->cantElem);
+   }
+}
+
+int getNumber(const Dictionary *dictionary, const char *key, double *result){
+   if(dictionary == NULL)
+      return 0;
+   Keynode *Aux = dictionary->kfirst;
+   Keynode *p = getGeneral(dictionary,key,Aux,3,dictionary->kfirst->cantElem);
+   if(p == NULL)
+      return 0;
+   else{
+      result = p->d; //Aqui hay un problema no se porque no se guarda
+      return 1;
+   }
+}
+
+int getBool(const Dictionary *dictionary, const char *key, Bool *result){
+   if(dictionary == NULL)
+      return 0;
+   Keynode *Aux = dictionary->kfirst;
+   Keynode *p = getGeneral(dictionary,key,Aux,4,dictionary->kfirst->cantElem);
+   if(p == NULL)
+      return 0;
+   else{
+      result = p->b;
+      return 1;
+   }
+}
+
+char *getString(const Dictionary *dictionary, const char *key){
+   if(dictionary == NULL)
+      return 0;
+   Keynode *Aux = dictionary->kfirst;
+   Keynode *p = getGeneral(dictionary,key,Aux,2,dictionary->kfirst->cantElem);
+   if(p == NULL)
+      return NULL;
+   else
+      return p->s;
+
+}
+
+int setNumberArray(Dictionary *d, const char *key, int size, double value[size])
 {
    if(!d) return 0;
 
@@ -68,6 +119,7 @@ int setNumberArray(Dictionary *dictionary, const char *key, int size, double val
    newk->d = newValue;
 
    newk->cantElem = size;
+   newk->tipo = 3;
    newk->next = NULL;
 
    if(!d->kfirst)
@@ -83,13 +135,14 @@ int setNumberArray(Dictionary *dictionary, const char *key, int size, double val
 
    return 1;
 }
+
 int setNumber(Dictionary *d, const char *key, double value)
 {
    double val[] = {value};
    return setNumberArray(d,key,1,val);
 }
 
-int setBoolArray(Dictionary *dictionary, const char *key, int size, Bool value[size])
+int setBoolArray(Dictionary *d, const char *key, int size, Bool value[size])
 {
    if(!d) return 0;
 
@@ -109,6 +162,7 @@ int setBoolArray(Dictionary *dictionary, const char *key, int size, Bool value[s
    newk->b = newValue;
 
    newk->cantElem = 1;
+   newk->tipo = 4;
    newk->next = NULL;
 
 
@@ -125,6 +179,7 @@ int setBoolArray(Dictionary *dictionary, const char *key, int size, Bool value[s
 
    return 1;
 }
+
 int setBool(Dictionary *d, const char *key, Bool value)
 {
    Bool val[] = {value};
@@ -153,6 +208,7 @@ int setStringArray(Dictionary *d, const char *key, int size, char *value[size])
    newk->sa = newValue;
 
    newk->cantElem = size;
+   newk->tipo = 2;
    newk->next = NULL;
 
    if(!d->kfirst)
@@ -168,6 +224,7 @@ int setStringArray(Dictionary *d, const char *key, int size, char *value[size])
 
    return 1;
 }
+
 int setString(Dictionary *d, const char *key, const char *value)
 {
    char *val[] = {value};
@@ -234,6 +291,7 @@ int setDictionaryArray(Dictionary *d, const char *key, int size, Dictionary *val
 
    newk->D = newValue;
    newk->cantElem = size;
+   newk->tipo = 1;
    newk->next = NULL;
 
    if(!d->kfirst)
