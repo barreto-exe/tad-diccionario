@@ -56,9 +56,9 @@ Keynode *getGeneral(const Dictionary *dictionary, const char *key,Keynode *p,int
    if(p->D != NULL){
       Dictionary *AuxDick = p->D;
       Keynode *AuxPussy = p->D->kfirst;
-      int Pene = AuxDick->kfirst->cantElem;  //El error es aqui, da violacion de segmento al intentar entrar en cantElemn
+      Keynode *test = AuxDick->kfirst;
+      int Pene = test->cantElem;  //El error es aqui, da violacion de segmento al intentar entrar en cantElemn
       getGeneral(p->D,key,p->D->kfirst,type,p->D->kfirst->cantElem);
-
    }
 
    if(p->next == NULL)
@@ -315,11 +315,10 @@ int setDictionaryArray(Dictionary *d, const char *key, int size, Dictionary *val
          strcpy(newValueAux->nombre,valueAux->nombre);
       */
 
-
-      Dictionary *newValueAux = newValue[i], *valueAux = value[i];
-
       //Inicializo diccionario en la posicion actual del arreglo.
-      newValueAux = newDictionary();
+      newValue[i] = newDictionary();
+
+      Dictionary *newValueAux = newValue[i], *valueAux = value+i;
 
       //Hago copia de primer Keynode de value en newValue
       Keynode *recorreValue = valueAux->kfirst;

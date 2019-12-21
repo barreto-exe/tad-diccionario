@@ -12,20 +12,25 @@ void TestMamaPipe(){
 
    setNumber(d,"MiPene",30.5);
    setBool(d,"Miculo",false);
-   setString(d,"Cara","Lista Para Semen");
+
+   char *test = (char *) malloc(sizeof(char)*20);
+   strcpy(test,"Hola");
+   setString(d,"Cara",test);
 
    setNumber(d2,"PeneLuis",2.0);
-   setBool(d2,"CuloLuis",true);
+   setBool(d2,"CuloLuis",false);
 
    setDictionary(d,"Diccionario2",d2);
 
    double resultadoNumber;
-   printf("Pudo: %d\n",getNumber(d,"PeneLuis",&resultadoNumber));
+   printf("Pudo: %d || ",getNumber(d,"MiPene",&resultadoNumber));
    printf("%f\n",resultadoNumber);
+
    Bool resultadoBool;
-   printf(" Pudo: %d\n",getBool(d,"Miculo",&resultadoBool));
-   printf("%d\n",resultadoBool);  //Como hago que esto imprima false o true
-   printf(" Pudo: %s\n",getString(d,"Cara"));
+   printf("Pudo: %d || ",getBool(d,"Miculo",&resultadoBool));
+   printf("%s\n",resultadoBool?"false":"true");  //Como hago que esto imprima false o true
+
+   printf("Pudo: %s\n",getString(d,"Cara"));
 }
 
 int main(){
