@@ -15,7 +15,6 @@ typedef struct key{
 } Keynode;
 
 typedef struct dictionary {
-	char *nombre;
 	struct key *kfirst;
 } Dictionary;
 

@@ -1,9 +1,11 @@
 # depslib dependency file v1.0
-1576588254 source:/media/sf_AyP_II/Proyecto2/TAD-Diccionario/dictionary.c
+1576953671 source:/media/sf_AyP_II/Proyecto2/TAD-Diccionario/dictionary.c
 	"dictionary.h"
 	<stdlib.h>
+	<string.h>
 
-1576588964 /media/sf_AyP_II/Proyecto2/TAD-Diccionario/dictionary.h
+1576951697 /media/sf_AyP_II/Proyecto2/TAD-Diccionario/dictionary.h
+	<string.h>
 
 1576948589 source:/media/sf_Programacion/3er Semestre/Proyecto 2/TAD-Diccionario/main.c
 	<stdio.h>
@@ -16,4 +18,8 @@
 	"dictionary.h"
 	<stdlib.h>
 	<string.h>
+
+1576952933 source:/media/sf_AyP_II/Proyecto2/TAD-Diccionario/main.c
+	<stdio.h>
+	"dictionary.h"
 

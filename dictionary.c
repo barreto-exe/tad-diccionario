@@ -11,7 +11,7 @@ Dictionary *newDictionary()
       exit -1;
    }
 
-   d->kfirst = d->nombre = NULL;
+   d->kfirst = NULL;
    return d;
 }
 
@@ -37,12 +37,10 @@ int tipoDatoCadena(const char *s)
       Devuelve un identificador, según el tipo de dato que
       represente la cadena.
 
-      [0] Diccionario.
-      [1] String.
-      [2] Numérico.
-      [3] Bool.
-      [4] Arreglo.
-      [5] ???
+      [1] Diccionario.
+      [2] String.
+      [3] Numérico.
+      [4] Bool.
    */
    int tipo = 0;
    return tipo;
@@ -68,7 +66,7 @@ int getNumber(const Dictionary *dictionary, const char *key, double *result){
    if(p == NULL)
       return 0;
    else{
-      result = p->d; //Aqui hay un problema no se porque no se guarda
+      *result = *p->d; //Listo
       return 1;
    }
 }
@@ -244,7 +242,7 @@ int setStringArray(Dictionary *d, const char *key, int size, char *value[size])
    char **newValue = (char **) malloc(sizeof(char *)*size);
    for(int i=0; i<size; i++)
    {
-      *newValue[i] = (char *) malloc(sizeof(char)*strlen(value[i])+1);
+      newValue[i] = (char *) malloc(sizeof(char)*strlen(value[i])+1);
       strcpy(newValue[i],value[i]);
    }
 
@@ -286,18 +284,6 @@ int setDictionaryArray(Dictionary *d, const char *key, int size, Dictionary *val
    strcpy(name,key);
    newk->name = name;
 
-   //-----------------------------------------------------------------------------
-   /*
-      ZONA EN CUARENTENA!!!!!
-
-      No sé cómo lo vi, pero lo que está dentro de estos límites resuelve
-      el problema de forma inteligente y eficiente. O al menos eso creo.
-
-      Soy el puto amo.
-
-      Aun así esto es zona en cuarentena, esta mierda es radioactiva y peligrosa.
-   */
-
 
    //Reservo espacio para la estructura que será hija de Dictionary d.
    Dictionary **newValue = (Dictionary **) malloc(sizeof(Dictionary)*size);
@@ -305,21 +291,31 @@ int setDictionaryArray(Dictionary *d, const char *key, int size, Dictionary *val
 
    for(int i=0; i<size;i++)
    {
-      //Reservo espacio para el nombre de la estrucutra
-      newValue[i]->nombre = (char *) malloc(sizeof(char)*strlen(value[i]->nombre)+1);
+      /* NO LE PARES BOLA A ESTO, LO BORRARÉ LUEGO
 
-      //Copio el nombre de la estructura
-      strcpy(newValue[i]->nombre,value[i]->nombre);
+         //Las cosas del nombre no hacen falta, porque los diccionarios no necesitan nombres.
+         //Reservo espacio para el nombre de la estrucutra
+         newValueAux->nombre = (char *) malloc((sizeof(char)*strlen(valueAux->nombre))+1);
+
+         //Copio el nombre de la estructura
+         strcpy(newValueAux->nombre,valueAux->nombre);
+      */
+
+
+      Dictionary *newValueAux = newValue[i], *valueAux = value[i];
+
+      //Inicializo diccionario en la posicion actual del arreglo.
+      newValueAux = newDictionary();
 
       //Hago copia de primer Keynode de value en newValue
-      Keynode *recorreValue = value[i]->kfirst;
-      newValue[i]->kfirst  = (Keynode *) malloc(sizeof(Keynode));
+      Keynode *recorreValue = valueAux->kfirst;
+      newValueAux->kfirst  = (Keynode *) malloc(sizeof(Keynode));
 
       //Todo lo que está dentro de value del user estara dentro del first del new
-      *newValue[i]->kfirst =  *recorreValue; //No considero que recorreValue (dicionario) sea nulo, el profe dijo que eso no pasaría xd.
+      *newValueAux->kfirst =  *recorreValue; //No considero que recorreValue (dicionario) sea nulo, el profe dijo que eso no pasaría xd.
 
      //Hago copia de todos los Keynodes en newValue
-      Keynode *recorreNew = newValue[i]->kfirst;
+      Keynode *recorreNew = newValueAux->kfirst;
 
       while(recorreValue->next)
       {
@@ -329,8 +325,6 @@ int setDictionaryArray(Dictionary *d, const char *key, int size, Dictionary *val
          recorreNew = recorreNew->next;
       }
    }
-
-   //---------------------------------------------------------
 
    newk->D = newValue;
    newk->cantElem = size;
@@ -352,8 +346,7 @@ int setDictionaryArray(Dictionary *d, const char *key, int size, Dictionary *val
 }
 
 int setDictionary(Dictionary *d, const char *key, Dictionary *value)
-//Coloqué muchos comentarios en esta función porque es más o menos confusa.
 {
-   Dictionary val[] = {*value};
+   Dictionary *val[] = {value};
    setDictionaryArray(d,key,1,val);
 }

@@ -10,7 +10,7 @@ void TestMamaPipe(){
    d2 = newDictionary();
    setNumber(d,"MiPene",30.5);
    setBool(d,"Miculo",false);
-  // setString(d,"Cara","Lista Para Semen");
+   setString(d,"Cara","Lista Para Semen");
 
    setNumber(d2,"PeneLuis",2.0);
    setBool(d2,"CuloLuis",true);
@@ -19,7 +19,7 @@ void TestMamaPipe(){
 
    double resultadoNumber;
    printf(" Pudo: %d\n",getNumber(d,"MiPene",&resultadoNumber));
-   printf("%lf\n",resultadoNumber);
+   printf("%f\n",resultadoNumber);
    Bool resultadoBool;
    printf(" Pudo: %d\n",getBool(d,"MiPene",&resultadoBool)); //Si pongo un key que no coincide
    printf("%s\n",resultadoBool);
