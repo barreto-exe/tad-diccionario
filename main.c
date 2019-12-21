@@ -3,14 +3,61 @@
 
 void testProfe();
 
-int main()
-{
-	return 0;
+void TestMamaPipe(){
+   Dictionary *d;
+   Dictionary *d2;
+   d = newDictionary();
+   d2 = newDictionary();
+
+
+   setNumber(d,"MiPene",30.5);
+   setBool(d,"Miculo",false);
+
+   char *test = (char *) malloc(sizeof(char)*20);
+   strcpy(test,"Hola");
+   setString(d,"Cara",test);
+
+   setNumber(d2,"K1",2.0);
+   setBool(d2,"K2",false);
+
+   setDictionary(d,"Diccionario2",d2);
+
+   double resultadoNumber;
+   printf("Pudo: %d || ",getNumber(d,"PeneLuis",&resultadoNumber));
+   printf("%f\n",resultadoNumber);
+
+   Bool resultadoBool;
+   printf("Pudo: %d || ",getBool(d,"Miculo",&resultadoBool));
+   printf("%s\n",resultadoBool?"false":"true");  //Como hago que esto imprima false o true
+
+   printf("Pudo: %s\n",getString(d,"Cara"));
+}
+
+int main(){
+   test1();
+   return 0;
+
 }
 
 void test1()
 {
+   Dictionary *d;
+   Dictionary *d2;
+   d = newDictionary();
+   d2 = newDictionary();
 
+
+   setNumber(d,"D1K1",30.5);
+   setBool(d,"D1K2",false);
+
+   setNumber(d2,"D2K1",2);
+   setBool(d2,"D2K2",true);
+
+   setDictionary(d,"D2",d2);
+
+   double resultadoNumber;
+   printf("Pudo: %d || ",getNumber(d,"D2K1",&resultadoNumber));
+   printf("%f\n",resultadoNumber);
 }
 
 void testProfe()

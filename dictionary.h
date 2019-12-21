@@ -1,3 +1,5 @@
+#include<string.h>
+
 typedef enum {true, false} Bool;
 
 typedef struct key{
@@ -13,7 +15,6 @@ typedef struct key{
 } Keynode;
 
 typedef struct dictionary {
-	char *nombre;
 	struct key *kfirst;
 } Dictionary;
 
@@ -89,3 +90,4 @@ char *jsonFromDictionary(const Dictionary *dictionary);
 
 // Releases the memory of the given dictionary
 void freeDictionary(Dictionary *dictionary);
+

@@ -27,7 +27,7 @@ Keynode *newKeynode()
 
    k->cantElem = k->tipo = 0;
    k->name = k->next = NULL;
-   k->b = k->d = k->s = k->sa = k->D = NULL;
+   k->b = k->d = k->sa = k->D = NULL;
 
    return k;
 }
@@ -45,6 +45,115 @@ int tipoDatoCadena(const char *s)
    */
    int tipo = 0;
    return tipo;
+}
+
+Keynode *getGeneral(const Dictionary *dictionary, const char *key,Keynode *p,int type,int amount){
+   int tiposAux = p->tipo;
+   char KeyAux[30];
+   strcpy(KeyAux,p->name);
+   if(strcmp(key,p->name) == 0 && p->tipo == type)
+      return p;
+
+   if(p->D != NULL){
+      Dictionary *DiccionarioHijo = p->D;
+      Keynode *PrimerNodoDeDiccionarioHijo = p->D->kfirst;
+
+      //Keynode a = *(p->D->kfirst), b = *p; //Esto es para probar
+
+      return getGeneral(p->D,key,p->D->kfirst,type,p->D->kfirst->cantElem);
+   }
+
+   if(p->next == NULL)
+      return NULL;
+   return getGeneral(dictionary,key,p->next,type,p->next->cantElem);
+}
+
+
+int getNumber(const Dictionary *dictionary, const char *key, double *result){
+   if(dictionary == NULL)
+      return 0;
+   Keynode *Aux = dictionary->kfirst;
+   Keynode *p = getGeneral(dictionary,key,Aux,3,dictionary->kfirst->cantElem);
+   if(p == NULL)
+      return 0;
+   else{
+      *result = *p->d; //Listo
+      return 1;
+   }
+}
+
+int getBool(const Dictionary *dictionary, const char *key, Bool *result){
+   if(dictionary == NULL)
+      return 0;
+   Keynode *Aux = dictionary->kfirst;
+   Keynode *p = getGeneral(dictionary,key,Aux,4,dictionary->kfirst->cantElem);
+   if(p == NULL)
+      return 0;
+   else{
+      *result = *p->b;
+      return 1;
+   }
+}
+
+char *getString(const Dictionary *dictionary, const char *key){
+   if(dictionary == NULL)
+      return NULL;
+   Keynode *Aux = dictionary->kfirst;
+   Keynode *p = getGeneral(dictionary,key,Aux,2,dictionary->kfirst->cantElem);
+   if(p == NULL)
+      return NULL;
+   else{
+      char AuxString[30];
+      strcpy(AuxString,*p->sa);
+      return *p->sa;
+
+   }
+
+
+}
+
+Dictionary *getDictionary(const Dictionary *dictionary, const char *key){
+   if(dictionary == NULL)
+      return NULL;
+   Keynode *Aux = dictionary->kfirst;
+   Keynode *p = getGeneral(dictionary,key,Aux,1,dictionary->kfirst->cantElem);
+   if(p == NULL)
+      return NULL;
+   else
+      return p->D;
+
+}
+
+double *getNumberArray(const Dictionary *dictionary, const char *key, int *sizeResult){
+   if(dictionary == NULL)
+      return NULL;
+   Keynode *Aux = dictionary->kfirst;
+   Keynode *p = getGeneral(dictionary,key,Aux,3,dictionary->kfirst->cantElem);
+   if(p == NULL)
+      return NULL;
+   else{
+      double *result = (double *) malloc(sizeof(double)*p->cantElem);
+      for(int i=0;i<p->cantElem-1;i++)
+         result[i] = p->d[i];
+      *sizeResult = p->cantElem;
+      return result;
+   }
+}
+
+Bool *getBoolArray(const Dictionary *dictionary, const char *key, int *sizeResult){
+   if(dictionary == NULL)
+      return NULL;
+   Keynode *Aux = dictionary->kfirst;
+   Keynode *p = getGeneral(dictionary,key,Aux,4,dictionary->kfirst->cantElem);
+   if(p == NULL)
+      return NULL;
+   else{
+      Bool *result = (Bool *) malloc(sizeof(Bool)*p->cantElem);
+      for(int i=0;i<p->cantElem-1;i++)
+         result[i] = p->d[i];
+      *sizeResult = p->cantElem;
+      return result;
+   }
 }
 
 int setNumberArray(Dictionary *d, const char *key, int size, double value[size])
@@ -67,6 +176,7 @@ int setNumberArray(Dictionary *d, const char *key, int size, double value[size])
    newk->d = newValue;
 
    newk->cantElem = size;
+   newk->tipo = 3;
    newk->next = NULL;
 
    if(!d->kfirst)
@@ -82,6 +192,7 @@ int setNumberArray(Dictionary *d, const char *key, int size, double value[size])
 
    return 1;
 }
+
 int setNumber(Dictionary *d, const char *key, double value)
 {
    double val[] = {value};
@@ -108,6 +219,7 @@ int setBoolArray(Dictionary *d, const char *key, int size, Bool value[size])
    newk->b = newValue;
 
    newk->cantElem = 1;
+   newk->tipo = 4;
    newk->next = NULL;
 
 
@@ -124,6 +236,7 @@ int setBoolArray(Dictionary *d, const char *key, int size, Bool value[size])
 
    return 1;
 }
+
 int setBool(Dictionary *d, const char *key, Bool value)
 {
    Bool val[] = {value};
@@ -145,13 +258,14 @@ int setStringArray(Dictionary *d, const char *key, int size, char *value[size])
    char **newValue = (char **) malloc(sizeof(char *)*size);
    for(int i=0; i<size; i++)
    {
-      *newValue[i] = (char *) malloc(sizeof(char)*strlen(value[i])+1);
+      newValue[i] = (char *) malloc(sizeof(char)*strlen(value[i])+1);
       strcpy(newValue[i],value[i]);
    }
 
    newk->sa = newValue;
 
    newk->cantElem = size;
+   newk->tipo = 2;
    newk->next = NULL;
 
    if(!d->kfirst)
@@ -167,6 +281,7 @@ int setStringArray(Dictionary *d, const char *key, int size, char *value[size])
 
    return 1;
 }
+
 int setString(Dictionary *d, const char *key, const char *value)
 {
    char *val[] = {value};
@@ -185,43 +300,35 @@ int setDictionaryArray(Dictionary *d, const char *key, int size, Dictionary *val
    strcpy(name,key);
    newk->name = name;
 
-   //-----------------------------------------------------------------------------
-   /*
-      ZONA EN CUARENTENA!!!!!
-
-      No sé cómo lo vi, pero lo que está dentro de estos límites resuelve
-      el problema de forma inteligente y eficiente. O al menos eso creo.
-
-      Soy el puto amo.
-
-      Aun así esto es zona en cuarentena, esta mierda es radioactiva y peligrosa.
-   */
-
-
    //Reservo espacio para la estructura que será hija de Dictionary d.
    Dictionary **newValue = (Dictionary **) malloc(sizeof(Dictionary)*size);
 
-
    for(int i=0; i<size;i++)
    {
-      //Reservo espacio para el nombre de la estrucutra
-      newValue[i]->nombre = (char *) malloc(sizeof(char)*strlen(value[i]->nombre)+1);
 
-      //Copio el nombre de la estructura
-      strcpy(newValue[i]->nombre,value[i]->nombre);
+      //Inicializo diccionario en la posicion actual del arreglo.
+      newValue[i] = newDictionary();
+
+      Dictionary *newValueAux = newValue[i], *valueAux = value[i];
 
       //Hago copia de primer Keynode de value en newValue
-      Keynode *recorreValue = value[i]->kfirst;
-      newValue[i]->kfirst  = (Keynode *) malloc(sizeof(Keynode));
+      Keynode *recorreValue = valueAux->kfirst;
+
+      newValueAux->kfirst  = newKeynode();
 
       //Todo lo que está dentro de value del user estara dentro del first del new
-      *newValue[i]->kfirst =  *recorreValue; //No considero que recorreValue (dicionario) sea nulo, el profe dijo que eso no pasaría xd.
+      Keynode *primerNodoNew = newValueAux->kfirst;
+      *primerNodoNew =  *recorreValue; //No considero que recorreValue (dicionario) sea nulo, el profe dijo que eso no pasaría xd.
+
+      //Keynode a = *primerNodoNew, b = *recorreValue; //Esto es para probar
 
      //Hago copia de todos los Keynodes en newValue
-      Keynode *recorreNew = newValue[i]->kfirst;
+      Keynode *recorreNew = newValueAux->kfirst;
 
       while(recorreValue->next)
       {
+         //Keynode a = *recorreValue; //Esto es para probar
+
          recorreValue = recorreValue->next;
          recorreNew->next = (Keynode *) malloc(sizeof(Keynode));
          *recorreNew->next = *recorreValue;
@@ -229,10 +336,9 @@ int setDictionaryArray(Dictionary *d, const char *key, int size, Dictionary *val
       }
    }
 
-   //---------------------------------------------------------
-
-   newk->D = newValue;
+   newk->D = *newValue;
    newk->cantElem = size;
+   newk->tipo = 1;
    newk->next = NULL;
 
    if(!d->kfirst)
@@ -250,8 +356,10 @@ int setDictionaryArray(Dictionary *d, const char *key, int size, Dictionary *val
 }
 
 int setDictionary(Dictionary *d, const char *key, Dictionary *value)
-//Coloqué muchos comentarios en esta función porque es más o menos confusa.
 {
-   Dictionary val[] = {*value};
+   //Dictionary a = *value; //Esto es para probar
+   //Keynode k = *value->kfirst->next;
+
+   Dictionary *val[] = {value};
    setDictionaryArray(d,key,1,val);
 }
