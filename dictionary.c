@@ -53,17 +53,19 @@ Keynode *getGeneral(const Dictionary *dictionary, const char *key,Keynode *p,int
    strcpy(KeyAux,p->name);
    if(strcmp(key,p->name) == 0 && p->tipo == type)
       return p;
+
    if(p->D != NULL){
-      Dictionary *AuxDick = p->D;
-      Keynode *AuxPussy = p->D->kfirst;
-      Keynode *test = AuxDick->kfirst;
-      int Pene = test->cantElem;  //El error es aqui, da violacion de segmento al intentar entrar en cantElemn
-      getGeneral(p->D,key,p->D->kfirst,type,p->D->kfirst->cantElem);
+      Dictionary *DiccionarioHijo = p->D;
+      Keynode *PrimerNodoDeDiccionarioHijo = p->D->kfirst;
+
+      //Keynode a = *(p->D->kfirst), b = *p; //Esto es para probar
+
+      return getGeneral(p->D,key,p->D->kfirst,type,p->D->kfirst->cantElem);
    }
 
    if(p->next == NULL)
       return NULL;
-   getGeneral(dictionary,key,p->next,type,p->next->cantElem);
+   return getGeneral(dictionary,key,p->next,type,p->next->cantElem);
 }
 
 
@@ -298,40 +300,35 @@ int setDictionaryArray(Dictionary *d, const char *key, int size, Dictionary *val
    strcpy(name,key);
    newk->name = name;
 
-
    //Reservo espacio para la estructura que será hija de Dictionary d.
    Dictionary **newValue = (Dictionary **) malloc(sizeof(Dictionary)*size);
 
-
    for(int i=0; i<size;i++)
    {
-      /* NO LE PARES BOLA A ESTO, LO BORRARÉ LUEGO
-
-         //Las cosas del nombre no hacen falta, porque los diccionarios no necesitan nombres.
-         //Reservo espacio para el nombre de la estrucutra
-         newValueAux->nombre = (char *) malloc((sizeof(char)*strlen(valueAux->nombre))+1);
-
-         //Copio el nombre de la estructura
-         strcpy(newValueAux->nombre,valueAux->nombre);
-      */
 
       //Inicializo diccionario en la posicion actual del arreglo.
       newValue[i] = newDictionary();
 
-      Dictionary *newValueAux = newValue[i], *valueAux = value+i;
+      Dictionary *newValueAux = newValue[i], *valueAux = value[i];
 
       //Hago copia de primer Keynode de value en newValue
       Keynode *recorreValue = valueAux->kfirst;
-      newValueAux->kfirst  = (Keynode *) malloc(sizeof(Keynode));
+
+      newValueAux->kfirst  = newKeynode();
 
       //Todo lo que está dentro de value del user estara dentro del first del new
-      *newValueAux->kfirst =  *recorreValue; //No considero que recorreValue (dicionario) sea nulo, el profe dijo que eso no pasaría xd.
+      Keynode *primerNodoNew = newValueAux->kfirst;
+      *primerNodoNew =  *recorreValue; //No considero que recorreValue (dicionario) sea nulo, el profe dijo que eso no pasaría xd.
+
+      //Keynode a = *primerNodoNew, b = *recorreValue; //Esto es para probar
 
      //Hago copia de todos los Keynodes en newValue
       Keynode *recorreNew = newValueAux->kfirst;
 
       while(recorreValue->next)
       {
+         //Keynode a = *recorreValue; //Esto es para probar
+
          recorreValue = recorreValue->next;
          recorreNew->next = (Keynode *) malloc(sizeof(Keynode));
          *recorreNew->next = *recorreValue;
@@ -339,7 +336,7 @@ int setDictionaryArray(Dictionary *d, const char *key, int size, Dictionary *val
       }
    }
 
-   newk->D = newValue;
+   newk->D = *newValue;
    newk->cantElem = size;
    newk->tipo = 1;
    newk->next = NULL;
@@ -360,6 +357,9 @@ int setDictionaryArray(Dictionary *d, const char *key, int size, Dictionary *val
 
 int setDictionary(Dictionary *d, const char *key, Dictionary *value)
 {
+   //Dictionary a = *value; //Esto es para probar
+   //Keynode k = *value->kfirst->next;
+
    Dictionary *val[] = {value};
    setDictionaryArray(d,key,1,val);
 }

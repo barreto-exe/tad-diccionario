@@ -17,13 +17,13 @@ void TestMamaPipe(){
    strcpy(test,"Hola");
    setString(d,"Cara",test);
 
-   setNumber(d2,"PeneLuis",2.0);
-   setBool(d2,"CuloLuis",false);
+   setNumber(d2,"K1",2.0);
+   setBool(d2,"K2",false);
 
    setDictionary(d,"Diccionario2",d2);
 
    double resultadoNumber;
-   printf("Pudo: %d || ",getNumber(d,"MiPene",&resultadoNumber));
+   printf("Pudo: %d || ",getNumber(d,"PeneLuis",&resultadoNumber));
    printf("%f\n",resultadoNumber);
 
    Bool resultadoBool;
@@ -34,15 +34,30 @@ void TestMamaPipe(){
 }
 
 int main(){
-   TestMamaPipe();
+   test1();
    return 0;
 
 }
 
-
 void test1()
 {
+   Dictionary *d;
+   Dictionary *d2;
+   d = newDictionary();
+   d2 = newDictionary();
 
+
+   setNumber(d,"D1K1",30.5);
+   setBool(d,"D1K2",false);
+
+   setNumber(d2,"D2K1",2);
+   setBool(d2,"D2K2",true);
+
+   setDictionary(d,"D2",d2);
+
+   double resultadoNumber;
+   printf("Pudo: %d || ",getNumber(d,"D2K1",&resultadoNumber));
+   printf("%f\n",resultadoNumber);
 }
 
 void testProfe()
