@@ -5,12 +5,25 @@ void testProfe();
 
 void TestMamaPipe(){
    Dictionary *d;
+   Dictionary *d2;
    d = newDictionary();
+   d2 = newDictionary();
    setNumber(d,"MiPene",30.5);
    setBool(d,"Miculo",false);
-   double resultado;
-   printf(" Pudo: %d\n",getNumber(d,"MiPene",&resultado));
-   printf("%lf",resultado);
+  // setString(d,"Cara","Lista Para Semen");
+
+   setNumber(d2,"PeneLuis",2.0);
+   setBool(d2,"CuloLuis",true);
+
+   setDictionary(d,"Diccionario2",d2);
+
+   double resultadoNumber;
+   printf(" Pudo: %d\n",getNumber(d,"MiPene",&resultadoNumber));
+   printf("%lf\n",resultadoNumber);
+   Bool resultadoBool;
+   printf(" Pudo: %d\n",getBool(d,"MiPene",&resultadoBool)); //Si pongo un key que no coincide
+   printf("%s\n",resultadoBool);
+   printf(" Pudo: %s\n",getString(d,"Cara"));
 }
 
 int main(){

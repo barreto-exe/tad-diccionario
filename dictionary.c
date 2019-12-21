@@ -49,17 +49,16 @@ int tipoDatoCadena(const char *s)
 }
 
 Keynode *getGeneral(const Dictionary *dictionary, const char *key,Keynode *p,int type,int amount){
-   if(p == NULL)
+   int tiposAux = p->tipo;
+   char KeyAux[30];
+   strcpy(KeyAux,p->name);
+   if(strcmp(key,p->name) == 0 && p->tipo == type)
+      return p;
+   if(p->next == NULL)
       return NULL;
-   for(int i=0; i<amount && p != NULL ; i++){ //No estoy muy seguro como se maneja esa parte de los arreglos dinamicos
-      int tiposAux = p->tipo;
-      char KeyAux[30];
-      strcpy(KeyAux,p->name);
-      if(strcmp(key,p->name) == 0 && p->tipo == type)
-         return p;
-      getGeneral(dictionary,key,p->next,type,p->next->cantElem);
-   }
+   getGeneral(dictionary,key,p->next,type,p->next->cantElem);
 }
+
 
 int getNumber(const Dictionary *dictionary, const char *key, double *result){
    if(dictionary == NULL)
@@ -89,7 +88,7 @@ int getBool(const Dictionary *dictionary, const char *key, Bool *result){
 
 char *getString(const Dictionary *dictionary, const char *key){
    if(dictionary == NULL)
-      return 0;
+      return NULL;
    Keynode *Aux = dictionary->kfirst;
    Keynode *p = getGeneral(dictionary,key,Aux,2,dictionary->kfirst->cantElem);
    if(p == NULL)
@@ -97,6 +96,50 @@ char *getString(const Dictionary *dictionary, const char *key){
    else
       return p->s;
 
+}
+
+Dictionary *getDictionary(const Dictionary *dictionary, const char *key){
+   if(dictionary == NULL)
+      return NULL;
+   Keynode *Aux = dictionary->kfirst;
+   Keynode *p = getGeneral(dictionary,key,Aux,1,dictionary->kfirst->cantElem);
+   if(p == NULL)
+      return NULL;
+   else
+      return p->D;
+
+}
+
+double *getNumberArray(const Dictionary *dictionary, const char *key, int *sizeResult){
+   if(dictionary == NULL)
+      return NULL;
+   Keynode *Aux = dictionary->kfirst;
+   Keynode *p = getGeneral(dictionary,key,Aux,3,dictionary->kfirst->cantElem);
+   if(p == NULL)
+      return NULL;
+   else{
+      double *result = (double *) malloc(sizeof(double)*p->cantElem);
+      for(int i=0;i<p->cantElem-1;i++)
+         result[i] = p->d[i];
+      *sizeResult = p->cantElem;
+      return result;
+   }
+}
+
+Bool *getBoolArray(const Dictionary *dictionary, const char *key, int *sizeResult){
+   if(dictionary == NULL)
+      return NULL;
+   Keynode *Aux = dictionary->kfirst;
+   Keynode *p = getGeneral(dictionary,key,Aux,4,dictionary->kfirst->cantElem);
+   if(p == NULL)
+      return NULL;
+   else{
+      Bool *result = (Bool *) malloc(sizeof(Bool)*p->cantElem);
+      for(int i=0;i<p->cantElem-1;i++)
+         result[i] = p->d[i];
+      *sizeResult = p->cantElem;
+      return result;
+   }
 }
 
 int setNumberArray(Dictionary *d, const char *key, int size, double value[size])
