@@ -7,14 +7,14 @@
 1576951697 /media/sf_AyP_II/Proyecto2/TAD-Diccionario/dictionary.h
 	<string.h>
 
-1576948589 source:/media/sf_Programacion/3er Semestre/Proyecto 2/TAD-Diccionario/main.c
+1576960769 source:/media/sf_Programacion/3er Semestre/Proyecto 2/TAD-Diccionario/main.c
 	<stdio.h>
 	"dictionary.h"
 
-1576881126 /media/sf_Programacion/3er Semestre/Proyecto 2/TAD-Diccionario/dictionary.h
+1576954318 /media/sf_Programacion/3er Semestre/Proyecto 2/TAD-Diccionario/dictionary.h
 	<string.h>
 
-1576946626 source:/media/sf_Programacion/3er Semestre/Proyecto 2/TAD-Diccionario/dictionary.c
+1576961897 source:/media/sf_Programacion/3er Semestre/Proyecto 2/TAD-Diccionario/dictionary.c
 	"dictionary.h"
 	<stdlib.h>
 	<string.h>

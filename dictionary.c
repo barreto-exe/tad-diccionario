@@ -52,6 +52,14 @@ Keynode *getGeneral(const Dictionary *dictionary, const char *key,Keynode *p,int
    strcpy(KeyAux,p->name);
    if(strcmp(key,p->name) == 0 && p->tipo == type)
       return p;
+   if(p->D != NULL){
+      Dictionary *AuxDick = p->D;
+      Keynode *AuxPussy = p->D->kfirst;
+      int Pene = AuxDick->kfirst->cantElem;  //El error es aqui, da violacion de segmento al intentar entrar en cantElemn
+      getGeneral(p->D,key,p->D->kfirst,type,p->D->kfirst->cantElem);
+
+   }
+
    if(p->next == NULL)
       return NULL;
    getGeneral(dictionary,key,p->next,type,p->next->cantElem);
@@ -79,7 +87,7 @@ int getBool(const Dictionary *dictionary, const char *key, Bool *result){
    if(p == NULL)
       return 0;
    else{
-      result = p->b;
+      *result = *p->b;
       return 1;
    }
 }
@@ -91,8 +99,13 @@ char *getString(const Dictionary *dictionary, const char *key){
    Keynode *p = getGeneral(dictionary,key,Aux,2,dictionary->kfirst->cantElem);
    if(p == NULL)
       return NULL;
-   else
-      return p->s;
+   else{
+      char AuxString[30];
+      strcpy(AuxString,*p->sa);
+      return *p->sa;
+
+   }
+
 
 }
 
