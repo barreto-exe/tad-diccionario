@@ -27,6 +27,7 @@ Keynode *newKeynode()
 
    k->cantElem = k->tipo = 0;
    k->name = k->next = NULL;
+   k->b = k->d = k->sa = k->D = NULL;
 
    return k;
 }
