@@ -6,8 +6,7 @@ typedef struct key{
    int tipo, cantElem;     //Tipo de dato del Keynode, Cantidad de elementos (arreglo dinámico).
    double *d;              //Tipo Numérico.
    Bool *b;                //Tipo Booleano.
-   char *s;                //Tipo Cadena.
-   char **sa;               //Tipo arreglo de Cadenas.
+   char **sa;              //Tipo Cadena.
    struct dictionary *D;   //Tipo Diccionario.
 
    struct key *next;
