@@ -9,6 +9,7 @@ typedef struct key{
    char *s;                //Tipo Cadena.
    char **sa;               //Tipo arreglo de Cadenas.
    struct dictionary *D;   //Tipo Diccionario.
+
    struct key *next;
 } Keynode;
 

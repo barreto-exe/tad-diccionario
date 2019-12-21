@@ -11,7 +11,7 @@ Dictionary *newDictionary()
       exit -1;
    }
 
-   d->kfirst = d->nombre = NULL;
+   d->kfirst = NULL;
    return d;
 }
 
@@ -27,6 +27,7 @@ Keynode *newKeynode()
 
    k->cantElem = k->tipo = 0;
    k->name = k->next = NULL;
+   k->b = k->d = k->s = k->sa = k->D = NULL;
 
    return k;
 }
@@ -37,18 +38,16 @@ int tipoDatoCadena(const char *s)
       Devuelve un identificador, según el tipo de dato que
       represente la cadena.
 
-      [0] Diccionario.
-      [1] String.
-      [2] Numérico.
-      [3] Bool.
-      [4] Arreglo.
-      [5] ???
+      [1] Diccionario.
+      [2] String.
+      [3] Numérico.
+      [4] Bool.
    */
    int tipo = 0;
    return tipo;
 }
 
-int setNumberArray(Dictionary *dictionary, const char *key, int size, double value[size])
+int setNumberArray(Dictionary *d, const char *key, int size, double value[size])
 {
    if(!d) return 0;
 
@@ -89,7 +88,7 @@ int setNumber(Dictionary *d, const char *key, double value)
    return setNumberArray(d,key,1,val);
 }
 
-int setBoolArray(Dictionary *dictionary, const char *key, int size, Bool value[size])
+int setBoolArray(Dictionary *d, const char *key, int size, Bool value[size])
 {
    if(!d) return 0;
 
