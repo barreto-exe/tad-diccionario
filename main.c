@@ -48,16 +48,17 @@ void test1()
 
 
    setNumber(d,"D1K1",30.5);
-   setBool(d,"D1K2",false);
 
-   setNumber(d2,"D2K1",2);
-   setBool(d2,"D2K2",true);
+   Bool ar[] = {true,false,true};
+   setBoolArray(d,"D1K2",3,ar);
 
-   setDictionary(d,"D2",d2);
+   //printf("Pudo: %d || ",);
+   //printf("%s\n",resultadoNumber?"true":"false");
 
-   double resultadoNumber;
-   printf("Pudo: %d || ",getNumber(d,"D2K1",&resultadoNumber));
-   printf("%f\n",resultadoNumber);
+   printf("Pudo eliminar: %d \n",removeElement(d,"D1K2"));
+
+
+   freeDictionary(d);
 }
 
 void testProfe()

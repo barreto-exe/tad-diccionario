@@ -68,6 +68,30 @@ Keynode *getGeneral(const Dictionary *dictionary, const char *key,Keynode *p,int
    return getGeneral(dictionary,key,p->next,type,p->next->cantElem);
 }
 
+Keynode *buscaGeneral(Dictionary *d, const char *k, Keynode *keyAnterior)
+//La búsqueda NO es recursiva en los diccionarios hijo del diccionario.
+{
+   Keynode *kaux = d->kfirst;
+
+   keyAnterior = NULL;
+
+   if(strcmp(kaux->name,k) == 0)
+   {
+      return kaux;
+   }
+
+   while(kaux->next)
+   {
+      if(strcmp(kaux->next->name,k) == 0)
+      {
+         keyAnterior = kaux;
+         return kaux->next;
+      }
+      kaux = kaux->next;
+   }
+
+   return NULL;
+}
 
 int getNumber(const Dictionary *dictionary, const char *key, double *result){
    if(dictionary == NULL)
@@ -362,4 +386,79 @@ int setDictionary(Dictionary *d, const char *key, Dictionary *value)
 
    Dictionary *val[] = {value};
    setDictionaryArray(d,key,1,val);
+}
+
+void freeDictionary(Dictionary *d)
+{
+   Keynode *kaux = d->kfirst;
+
+   //Hago free de todas las llaves.
+   while(kaux)
+   {
+      Keynode *borrado = kaux;
+      kaux = kaux->next;
+      freeKey(borrado);
+   }
+
+   //Hago free del diccionario
+   free(d);
+}
+
+void freeKey(Keynode *k)
+{
+   //Primero hago free del valor.
+   switch(k->tipo)
+   {
+      //Dictionary
+      case 1:
+         freeDictionary(k->D);
+      break;
+
+      //Cadena
+      case 2:
+         for(int i=0; i<k->cantElem; i++)
+         {
+            free(k->sa[i]);
+         }
+         free(k->sa);
+      break;
+
+      //Numerico
+      case 3:
+         free(k->d);
+      break;
+
+      //Bool
+      case 4:
+         free(k->b);
+      break;
+   }
+
+   //Luego free del nombre
+   free(k->name);
+
+   //Por ultimo free del nodo
+   free(k);
+}
+
+int removeElement(Dictionary *d, const char *key)
+{
+   Keynode *anterior = NULL, *borrado = NULL;
+
+   if(borrado = buscaGeneral(d,key,anterior))
+   {
+      if(anterior)
+      {
+         anterior->next = borrado->next;
+      }
+      else
+      {
+         d->kfirst = borrado->next;
+      }
+
+      freeKey(borrado);
+      return 1;
+   }
+
+   return 0;
 }

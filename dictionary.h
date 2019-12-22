@@ -1,15 +1,16 @@
 #include<string.h>
 
-typedef enum {true, false} Bool;
+typedef enum {false, true} Bool;
 
 typedef struct key{
    char *name;
 
    int tipo, cantElem;     //Tipo de dato del Keynode, Cantidad de elementos (arreglo dinámico).
-   double *d;              //Tipo Numérico.
-   Bool *b;                //Tipo Booleano.
-   char **sa;              //Tipo Cadena.
-   struct dictionary *D;   //Tipo Diccionario.
+
+   struct dictionary *D;   //Tipo [1]Diccionario.
+   char **sa;              //Tipo [2]Cadena.
+   double *d;              //Tipo [3]Numérico.
+   Bool *b;                //Tipo [4]Booleano.
 
    struct key *next;
 } Keynode;
