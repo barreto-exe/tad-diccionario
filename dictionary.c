@@ -53,21 +53,10 @@ Keynode *getGeneral(const Dictionary *dictionary, const char *key,Keynode *p,int
    strcpy(KeyAux,p->name);
    if(strcmp(key,p->name) == 0 && p->tipo == type)
       return p;
-
-   if(p->D != NULL){
-      Dictionary *DiccionarioHijo = p->D;
-      Keynode *PrimerNodoDeDiccionarioHijo = p->D->kfirst;
-
-      //Keynode a = *(p->D->kfirst), b = *p; //Esto es para probar
-
-      return getGeneral(p->D,key,p->D->kfirst,type,p->D->kfirst->cantElem);
-   }
-
    if(p->next == NULL)
       return NULL;
    return getGeneral(dictionary,key,p->next,type,p->next->cantElem);
-}
-
+}\
 
 int getNumber(const Dictionary *dictionary, const char *key, double *result){
    if(dictionary == NULL)
@@ -106,10 +95,7 @@ char *getString(const Dictionary *dictionary, const char *key){
       char AuxString[30];
       strcpy(AuxString,*p->sa);
       return *p->sa;
-
    }
-
-
 }
 
 Dictionary *getDictionary(const Dictionary *dictionary, const char *key){
@@ -133,7 +119,7 @@ double *getNumberArray(const Dictionary *dictionary, const char *key, int *sizeR
       return NULL;
    else{
       double *result = (double *) malloc(sizeof(double)*p->cantElem);
-      for(int i=0;i<p->cantElem-1;i++)
+      for(int i=0;i<p->cantElem;i++)//Por que con el cantElemn-1 no funciona bien?
          result[i] = p->d[i];
       *sizeResult = p->cantElem;
       return result;
@@ -149,8 +135,26 @@ Bool *getBoolArray(const Dictionary *dictionary, const char *key, int *sizeResul
       return NULL;
    else{
       Bool *result = (Bool *) malloc(sizeof(Bool)*p->cantElem);
-      for(int i=0;i<p->cantElem-1;i++)
-         result[i] = p->d[i];
+      int size = p->cantElem;
+      for(int i=0;i<p->cantElem;i++)
+         result[i] = p->b[i];
+      *sizeResult = p->cantElem;
+      return result;
+   }
+}
+
+char **getStringArray(const Dictionary *dictionary, const char *key, int *sizeResult){
+   if(dictionary == NULL)
+      return NULL;
+   Keynode *Aux = dictionary->kfirst;
+   Keynode *p = getGeneral(dictionary,key,Aux,2,dictionary->kfirst->cantElem);
+   if(p == NULL)
+      return NULL;
+   else{
+      char **result = (char **) malloc(sizeof(char *)*p->cantElem);
+      int size = p->cantElem;
+      for(int i=0;i<p->cantElem;i++)
+         result[i] = p->sa[0][i];
       *sizeResult = p->cantElem;
       return result;
    }
@@ -218,7 +222,7 @@ int setBoolArray(Dictionary *d, const char *key, int size, Bool value[size])
    }
    newk->b = newValue;
 
-   newk->cantElem = 1;
+   newk->cantElem = size;
    newk->tipo = 4;
    newk->next = NULL;
 

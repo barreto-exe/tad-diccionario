@@ -9,7 +9,6 @@ void TestMamaPipe(){
    d = newDictionary();
    d2 = newDictionary();
 
-
    setNumber(d,"MiPene",30.5);
    setBool(d,"Miculo",false);
 
@@ -25,16 +24,41 @@ void TestMamaPipe(){
    double resultadoNumber;
    printf("Pudo: %d || ",getNumber(d,"PeneLuis",&resultadoNumber));
    printf("%f\n",resultadoNumber);
+   resultadoNumber = 0.0;
 
    Bool resultadoBool;
-   printf("Pudo: %d || ",getBool(d,"Miculo",&resultadoBool));
-   printf("%s\n",resultadoBool?"false":"true");  //Como hago que esto imprima false o true
+   printf("Pudo: %d || ",getBool(d2,"K2",&resultadoBool));
+   printf("%s\n",resultadoBool?"false":"true");
 
    printf("Pudo: %s\n",getString(d,"Cara"));
+
+   Dictionary *d3 = getDictionary(d,"Diccionario2");
+   printf("Pudo en D3: %d ||",getNumber(d3,"K1",&resultadoNumber));
+
 }
 
+void TestMamaPipeTheComeback(){
+   Dictionary *d;
+   Dictionary *d2;
+
+   d = newDictionary();
+   d2 = newDictionary();
+
+   char *array[] = {"Hola","Fea",";D"};
+   setStringArray(d,"K1",3,array);
+
+   int sizeResult;
+   char **arrayResult = getStringArray(d,"K1",&sizeResult);
+   for(int i=0; i<sizeResult; i++){
+      printf(" %s ",**arrayResult+i);
+   }
+   printf("\n");
+   for(int i=0; i<sizeResult; i++){
+      printf(" %s ",array[i]);
+   }
+}
 int main(){
-   test1();
+   TestMamaPipeTheComeback();
    return 0;
 
 }
