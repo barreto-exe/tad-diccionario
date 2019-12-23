@@ -9,7 +9,7 @@ void TestMamaPipe(){
    d = newDictionary();
    d2 = newDictionary();
 
-   setNumber(d,"MiPene",30.5);
+ //  setNumber(d,"MiPene",30.5);
    setBool(d,"Miculo",false);
 
    char *test = (char *) malloc(sizeof(char)*20);
@@ -45,22 +45,16 @@ void TestMamaPipeTheComeback(){
    d2 = newDictionary();
 
    char *array[] = {"Hola","Fea",";D"};
+   Bool arrayBool[] = {true,false,false};
+   double arrayNumber[] = {1.0,2.0,3.0};
+   setNumberArray(d,"K3",3,arrayNumber);
    setStringArray(d,"K1",3,array);
+   setBoolArray(d,"K2",3,arrayBool);
+   jsonFromDictionary(d);
 
-   int sizeResult;
-   char **arrayResult = getStringArray(d,"K1",&sizeResult);
-   for(int i=0; i<sizeResult; i++){
-      for(int j=0; arrayResult[j][i] != '\0'; j++){
-         printf(" %c ",arrayResult[j][i]);
-      }
-   }
-   printf("\n");
-   for(int i=0; i<sizeResult; i++){
-      printf(" %s ",array[i]);
-   }
 }
 int main(){
-   TestMamaPipe();
+   TestMamaPipeTheComeback();
 
    return 0;
 

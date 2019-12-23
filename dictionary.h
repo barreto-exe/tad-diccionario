@@ -42,6 +42,7 @@ double *getNumberArray(const Dictionary *dictionary, const char *key, int *sizeR
 Bool *getBoolArray(const Dictionary *dictionary, const char *key, int *sizeResult);
 
 // Returns the array of strings associated to the corresponding key, otherwise returns NULL
+
 char **getStringArray(const Dictionary *dictionary, const char *key, int *sizeResult);
 
 // Returns the array of dictionaries associated to the corresponding key, otherwise returns NULL

@@ -1,6 +1,8 @@
 #include "dictionary.h"
 #include <stdlib.h>
+#include<math.h>
 #include <string.h>
+
 
 Dictionary *newDictionary()
 {
@@ -149,9 +151,11 @@ char **getStringArray(const Dictionary *dictionary, const char *key, int *sizeRe
       return NULL;
    else{
       char **result = (char **) malloc(sizeof(char *)*p->cantElem);
-      int size = p->cantElem;
-      for(int i=0;i<p->cantElem;i++)
-         result[i] = p->sa[0][i]; //Se esta recorriendo bien?
+      for(int i=0;i<p->cantElem;i++){
+         result[i] = (char *) malloc(sizeof(char)*strlen(p->sa[i])+1);
+         strcpy(result[i],p->sa[i]);//Se esta recorriendo bien?
+      }
+
       *sizeResult = p->cantElem;
       return result;
    }
@@ -167,8 +171,9 @@ Dictionary **getDictionaryArray(const Dictionary *dictionary, const char *key, i
    else{
       Dictionary **result = (Dictionary **) malloc(sizeof(Dictionary)*dictionary->kfirst->cantElem);
       int size = dictionary->kfirst->cantElem;
-      for(int i=0;i<p->D->kfirst->cantElem;i++)
-       //  result[i][] = p->D[0][i];   //Como mierda recorro esto?
+      for(int i=0;i<p->D->kfirst->cantElem;i++){
+                     //Como mierda recorro esta mierda?
+      }
       *sizeResult = p->D->kfirst->cantElem;
       return result;
    }
@@ -382,6 +387,24 @@ int setDictionary(Dictionary *d, const char *key, Dictionary *value)
    setDictionaryArray(d,key,1,val);
 }
 
+void PutOnCommas(char *Result,int Remaining, int Actual){
+   if(Remaining == Actual+1)
+      return;
+   strcat(Result,",");
+   return;
+}
+
+int NumberDigits(int num){
+   int amount = 0;
+   int newNum = num/10;
+   while(newNum){
+      newNum=num/10;
+      num = newNum;
+      amount++;
+   }
+   return amount;
+}
+
 void DictionaryAJson(char *Result,Keynode *p){
    if(p == NULL)
       return;
@@ -396,28 +419,36 @@ void DictionaryAJson(char *Result,Keynode *p){
          strcat(Result,"{");
          DictionaryAJson(Result,p->D->kfirst);  //Como hago para que recorra el arreglo de dictionary
          strcat(Result,"}");
+         PutOnCommas(Result,p->cantElem,i);
       }
    }else if(type == 2){
       for(int i=0; i<p->cantElem; i++){
          strcat(Result,"\"");
-         strcat(Result,p->sa[i]);   //Como hago para que recorra el arreglo de
-         strcat(Result,"\",");
+         strcat(Result,p->sa[i]);
+         strcat(Result,"\"");
+         PutOnCommas(Result,p->cantElem,i);
       }
    }else if(type == 3){
       for(int i=0; i<p->cantElem; i++){
-         /*char *Elem = Aqui va la funcion que pasa de float a string
-         strcat(Result,Elem)*/
+         char Elem[200];
+         gcvt(p->d[i],10,Elem);
+         strcat(Result,Elem);
+         PutOnCommas(Result,p->cantElem,i);
       }
    }else if(type == 4){
       for(int i=0 ; i<p->cantElem ; i++){
+         int size = p->cantElem;
          if(p->b[i])
-            strcat(Result,"True,");
+            strcat(Result,"True");
          else
-            strcat(Result,"False,");
+            strcat(Result,"False");
+         PutOnCommas(Result,p->cantElem,i);
       }
    }
    if(p->cantElem >1)
       strcat(Result,"]");
+   if(p->next != NULL)
+      strcat(Result,",");
    DictionaryAJson(Result,p->next);
 }
 
