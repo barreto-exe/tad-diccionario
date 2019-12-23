@@ -34,7 +34,7 @@ void TestMamaPipe(){
 
    Dictionary *d3 = getDictionary(d,"Diccionario2");
    printf("Pudo en D3: %d ||",getNumber(d3,"K1",&resultadoNumber));
-
+   jsonFromDictionary(d);
 }
 
 void TestMamaPipeTheComeback(){
@@ -50,7 +50,9 @@ void TestMamaPipeTheComeback(){
    int sizeResult;
    char **arrayResult = getStringArray(d,"K1",&sizeResult);
    for(int i=0; i<sizeResult; i++){
-      printf(" %s ",**arrayResult+i);
+      for(int j=0; arrayResult[j][i] != '\0'; j++){
+         printf(" %c ",arrayResult[j][i]);
+      }
    }
    printf("\n");
    for(int i=0; i<sizeResult; i++){
@@ -58,7 +60,8 @@ void TestMamaPipeTheComeback(){
    }
 }
 int main(){
-   TestMamaPipeTheComeback();
+   TestMamaPipe();
+
    return 0;
 
 }

@@ -48,15 +48,12 @@ int tipoDatoCadena(const char *s)
 }
 
 Keynode *getGeneral(const Dictionary *dictionary, const char *key,Keynode *p,int type,int amount){
-   int tiposAux = p->tipo;
-   char KeyAux[30];
-   strcpy(KeyAux,p->name);
    if(strcmp(key,p->name) == 0 && p->tipo == type)
       return p;
    if(p->next == NULL)
       return NULL;
    return getGeneral(dictionary,key,p->next,type,p->next->cantElem);
-}\
+}
 
 int getNumber(const Dictionary *dictionary, const char *key, double *result){
    if(dictionary == NULL)
@@ -119,7 +116,7 @@ double *getNumberArray(const Dictionary *dictionary, const char *key, int *sizeR
       return NULL;
    else{
       double *result = (double *) malloc(sizeof(double)*p->cantElem);
-      for(int i=0;i<p->cantElem;i++)//Por que con el cantElemn-1 no funciona bien?
+      for(int i=0;i<p->cantElem;i++)   //Por que con el cantElemn-1 no funciona bien?
          result[i] = p->d[i];
       *sizeResult = p->cantElem;
       return result;
@@ -154,8 +151,25 @@ char **getStringArray(const Dictionary *dictionary, const char *key, int *sizeRe
       char **result = (char **) malloc(sizeof(char *)*p->cantElem);
       int size = p->cantElem;
       for(int i=0;i<p->cantElem;i++)
-         result[i] = p->sa[0][i];
+         result[i] = p->sa[0][i]; //Se esta recorriendo bien?
       *sizeResult = p->cantElem;
+      return result;
+   }
+}
+
+Dictionary **getDictionaryArray(const Dictionary *dictionary, const char *key, int *sizeResult){
+   if(dictionary == NULL)
+      return NULL;
+   Keynode *Aux = dictionary->kfirst;
+   Keynode *p = getGeneral(dictionary,key,Aux,1,dictionary->kfirst->cantElem);
+   if(p == NULL)
+      return NULL;
+   else{
+      Dictionary **result = (Dictionary **) malloc(sizeof(Dictionary)*dictionary->kfirst->cantElem);
+      int size = dictionary->kfirst->cantElem;
+      for(int i=0;i<p->D->kfirst->cantElem;i++)
+       //  result[i][] = p->D[0][i];   //Como mierda recorro esto?
+      *sizeResult = p->D->kfirst->cantElem;
       return result;
    }
 }
@@ -366,4 +380,51 @@ int setDictionary(Dictionary *d, const char *key, Dictionary *value)
 
    Dictionary *val[] = {value};
    setDictionaryArray(d,key,1,val);
+}
+
+void DictionaryAJson(char *Result,Keynode *p){
+   if(p == NULL)
+      return;
+   int type = p->tipo;
+   strcat(Result,"\"");
+   strcat(Result,p->name);
+   strcat(Result,"\":");
+   if(p->cantElem >1)
+      strcat(Result,"[");
+   if(type == 1){
+      for(int i=0; i<p->cantElem; i++){
+         strcat(Result,"{");
+         DictionaryAJson(Result,p->D->kfirst);  //Como hago para que recorra el arreglo de dictionary
+         strcat(Result,"}");
+      }
+   }else if(type == 2){
+      for(int i=0; i<p->cantElem; i++){
+         strcat(Result,"\"");
+         strcat(Result,p->sa[i]);   //Como hago para que recorra el arreglo de
+         strcat(Result,"\",");
+      }
+   }else if(type == 3){
+      for(int i=0; i<p->cantElem; i++){
+         /*char *Elem = Aqui va la funcion que pasa de float a string
+         strcat(Result,Elem)*/
+      }
+   }else if(type == 4){
+      for(int i=0 ; i<p->cantElem ; i++){
+         if(p->b[i])
+            strcat(Result,"True,");
+         else
+            strcat(Result,"False,");
+      }
+   }
+   if(p->cantElem >1)
+      strcat(Result,"]");
+   DictionaryAJson(Result,p->next);
+}
+
+char *jsonFromDictionary(const Dictionary *dictionary){
+   char *Result = (char *) malloc(sizeof(char)*100);
+   strcat(Result,"{");
+   DictionaryAJson(Result,dictionary->kfirst);
+   strcat(Result,"}\0");
+   printf("%s",Result);
 }
