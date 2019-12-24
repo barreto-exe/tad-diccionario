@@ -40,24 +40,37 @@ void TestMamaPipe(){
 void TestMamaPipeTheComeback(){
    Dictionary *d;
    Dictionary *d2;
+   Dictionary *d3;
 
    d = newDictionary();
    d2 = newDictionary();
+   d3 = newDictionary();
 
    char *array[] = {"Hola","Fea",";D"};
    Bool arrayBool[] = {true,false,false};
    double arrayNumber[] = {1.0,2.0,3.0};
-   setNumberArray(d,"K3",3,arrayNumber);
-   setStringArray(d,"K1",3,array);
-   setBoolArray(d,"K2",3,arrayBool);
-   jsonFromDictionary(d);
 
+   setString(d,"K1","Resultado");
+   setNumberArray(d,"K2",3,arrayNumber);
+   setStringArray(d,"K3",3,array);
+   setBool(d,"K4",true);
+
+   setNumber(d2,"K5",30.5);
+   setBoolArray(d2,"K6",3,arrayBool);
+   setString(d2,"K7","Hola");
+
+   setNumber(d3,"K8",40.0);
+   setBool(d3,"K9",true);
+   setString(d3,"K10","HolaBB");
+
+   Dictionary *arrayDictionary[] = {d3,d2};
+   setDictionaryArray(d,"K11",2,arrayDictionary);
+
+   jsonFromDictionary(d);
 }
 int main(){
    TestMamaPipeTheComeback();
-
    return 0;
-
 }
 
 void test1()

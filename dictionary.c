@@ -1,6 +1,5 @@
 #include "dictionary.h"
 #include <stdlib.h>
-#include<math.h>
 #include <string.h>
 
 
@@ -65,7 +64,7 @@ int getNumber(const Dictionary *dictionary, const char *key, double *result){
    if(p == NULL)
       return 0;
    else{
-      *result = *p->d; //Listo
+      *result = *p->d;
       return 1;
    }
 }
@@ -91,9 +90,9 @@ char *getString(const Dictionary *dictionary, const char *key){
    if(p == NULL)
       return NULL;
    else{
-      char AuxString[30];
-      strcpy(AuxString,*p->sa);
-      return *p->sa;
+      char *result = (char *) malloc(sizeof(char)*strlen(*p->sa)+1);
+      strcpy(result,*p->sa);
+      return result;
    }
 }
 
@@ -104,8 +103,12 @@ Dictionary *getDictionary(const Dictionary *dictionary, const char *key){
    Keynode *p = getGeneral(dictionary,key,Aux,1,dictionary->kfirst->cantElem);
    if(p == NULL)
       return NULL;
-   else
-      return p->D;
+   else{
+      Dictionary *result = (Dictionary *) malloc(sizeof(Dictionary));
+      *result = *p->D;
+
+      return result;
+   }
 
 }
 
@@ -155,7 +158,6 @@ char **getStringArray(const Dictionary *dictionary, const char *key, int *sizeRe
          result[i] = (char *) malloc(sizeof(char)*strlen(p->sa[i])+1);
          strcpy(result[i],p->sa[i]);//Se esta recorriendo bien?
       }
-
       *sizeResult = p->cantElem;
       return result;
    }
@@ -169,12 +171,12 @@ Dictionary **getDictionaryArray(const Dictionary *dictionary, const char *key, i
    if(p == NULL)
       return NULL;
    else{
-      Dictionary **result = (Dictionary **) malloc(sizeof(Dictionary)*dictionary->kfirst->cantElem);
-      int size = dictionary->kfirst->cantElem;
-      for(int i=0;i<p->D->kfirst->cantElem;i++){
-                     //Como mierda recorro esta mierda?
+      Dictionary **result = (Dictionary **) malloc(sizeof(Dictionary *)*p->cantElem);
+      for(int i=0; i<p->cantElem ; i++){
+         result = (Dictionary *) malloc(sizeof(Dictionary));
+         *result[i] = p->D[i];
       }
-      *sizeResult = p->D->kfirst->cantElem;
+      *sizeResult = p->cantElem;
       return result;
    }
 }
@@ -394,17 +396,6 @@ void PutOnCommas(char *Result,int Remaining, int Actual){
    return;
 }
 
-int NumberDigits(int num){
-   int amount = 0;
-   int newNum = num/10;
-   while(newNum){
-      newNum=num/10;
-      num = newNum;
-      amount++;
-   }
-   return amount;
-}
-
 void DictionaryAJson(char *Result,Keynode *p){
    if(p == NULL)
       return;
@@ -453,9 +444,9 @@ void DictionaryAJson(char *Result,Keynode *p){
 }
 
 char *jsonFromDictionary(const Dictionary *dictionary){
-   char *Result = (char *) malloc(sizeof(char)*100);
+   char *Result = (char *) malloc(sizeof(char)*1024);
    strcat(Result,"{");
    DictionaryAJson(Result,dictionary->kfirst);
-   strcat(Result,"}\0");
+   strcat(Result,"}");
    printf("%s",Result);
 }
