@@ -34,7 +34,7 @@ void TestMamaPipe(){
 }
 
 int main(){
-   test1();
+   test2();
    return 0;
 
 }
@@ -74,4 +74,21 @@ void testProfe()
 	//if(getNumber(d1,"value",&v1) && getNumber(d2,"price",&v2) && v1 == v2) {
 		printf("iguales\n");
 	//}
+}
+
+
+void test2()
+{
+   //dictionaryFromJson("{\"nombre\":\"La tasca\",\"distancia\":30.5,\"abierto\":false,\"gerente\":{\"nombre\":\"Juan\",\"sueldo\":1500.0},\"comentarios\":[\"servicio de primera\",\"perfecto\"]}");
+
+   Dictionary *a = dictionaryFromJson("{\"Numero\":[30,20,40,33,33.3],\"Bool\":[false,true,false,true]}");
+
+   Keynode a1 = *a->kfirst, a2 = *a->kfirst->next;
+
+   Bool Test;
+
+   for(int i= 0; i<a2.cantElem; i++)
+   {
+      Test = a2.b[i];
+   }
 }

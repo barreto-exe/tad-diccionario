@@ -32,19 +32,32 @@ Keynode *newKeynode()
    return k;
 }
 
-int tipoDatoCadena(const char *s)
-{
-   /*
-      Devuelve un identificador, según el tipo de dato que
-      represente la cadena.
-
-      [1] Diccionario.
-      [2] String.
-      [3] Numérico.
-      [4] Bool.
-   */
-   int tipo = 0;
-   return tipo;
+void removerCaracteres(char *cadena, char *caracteres) {
+  int indiceCadena = 0, indiceCadenaLimpia = 0;
+  int deberiaAgregarCaracter = 1;
+  // Recorrer cadena carácter por carácter
+  while (cadena[indiceCadena]) {
+    // Primero suponemos que la letra sí debe permanecer
+    deberiaAgregarCaracter = 1;
+    int indiceCaracteres = 0;
+    // Recorrer los caracteres prohibidos
+    while (caracteres[indiceCaracteres]) {
+      // Y si la letra actual es uno de los caracteres, ya no se agrega
+      if (cadena[indiceCadena] == caracteres[indiceCaracteres]) {
+        deberiaAgregarCaracter = 0;
+      }
+      indiceCaracteres++;
+    }
+    // Dependiendo de la variable de arriba, la letra se agrega a la "nueva
+    // cadena"
+    if (deberiaAgregarCaracter) {
+      cadena[indiceCadenaLimpia] = cadena[indiceCadena];
+      indiceCadenaLimpia++;
+    }
+    indiceCadena++;
+  }
+  // Al final se agrega el carácter NULL para terminar la cadena
+  cadena[indiceCadenaLimpia] = 0;
 }
 
 Keynode *getGeneral(const Dictionary *dictionary, const char *key,Keynode *p,int type,int amount){
@@ -461,4 +474,250 @@ int removeElement(Dictionary *d, const char *key)
    }
 
    return 0;
+}
+
+int tipoDatoCadena(const char *s)
+{
+   /*
+      Devuelve un identificador, según el tipo de dato que
+      represente la cadena.
+
+      [1] Diccionario.
+      [2] String.
+      [3] Numérico.
+      [4] Bool.
+   */
+
+   int tipo = 4; //Si no entra en ninguna condicion, es bool.
+   switch(s[0])
+   {
+      case '{': tipo = 1; break;
+      case '"': tipo = 2; break;
+   }
+   if(s[0]>='0' && s[0]<= '9') tipo=3;
+
+   return tipo;
+}
+
+char *all2Array(const char *json)
+//Copia el json y mete a todos los valores en arreglos, incluso si es un sólo elemento.
+{
+   char *result = (char *) malloc(sizeof(char)*strlen(json)+30);
+   strcpy(result,json);
+
+   char copia[1024];
+   char *aux = strstr(result,":");
+
+   while(aux)
+   {
+      aux++;
+      if(*aux != '[' && *aux != '{')
+      {
+         strcpy(copia,aux);
+         *aux = '[';
+         aux++;
+         strcpy(aux,copia);
+
+         aux = strstr(aux,",") ? strstr(aux,",") : strstr(aux,"}");
+         strcpy(copia,aux);
+         *aux = ']';
+         aux++;
+         strcpy(aux,copia);
+      }
+      else if(*aux == '[')
+      {
+         aux = strstr(aux,"]");
+      }
+      else if(*aux == '{')
+      {
+         //Agrego corchete abre
+         strcpy(copia,aux);
+         *aux = '[';
+         aux++;
+         strcpy(aux,copia);
+
+         char *iniDicc, *finalDicc;
+         iniDicc = finalDicc = aux;
+         int desbalance = 1;
+
+         while(desbalance)
+         {
+            finalDicc++;
+            if(*finalDicc == '}')
+               desbalance--;
+            if(*finalDicc == '{')
+               desbalance++;
+         }
+         finalDicc++; //Apunto al espacio despues de llave de cierre correspondiente.
+
+         //Agrego corchete cierra
+         strcpy(copia,finalDicc);
+         *finalDicc = ']';
+         finalDicc++;
+         strcpy(finalDicc,copia);
+         finalDicc--; //Esto queda apuntando a corchete cierra.
+
+         char *jsonAux = (char *) malloc(sizeof(char)*(finalDicc-iniDicc)+1);
+         strncpy(jsonAux,iniDicc,finalDicc-iniDicc);
+
+         char *jsonAuxArray = all2Array(jsonAux);
+
+         char finalCad[1024]; //Guardo todo lo que estas despues de llave cierre.
+         strcpy(finalCad,finalDicc);
+
+         strcpy(iniDicc,jsonAuxArray);   //Pego el json convertido.
+         iniDicc+= strlen(jsonAuxArray); //Me muevo al final de lo que pegué.
+         strcpy(iniDicc,finalCad);       //Lo dejo como estaba
+
+         aux = iniDicc;
+
+         free(jsonAux);
+         free(jsonAuxArray);
+      }
+      aux=strstr(aux,":");
+   }
+
+   return result;
+}
+
+Dictionary *dictionaryFromJson(const char *json)
+{
+   char *j = all2Array(json);
+   //printf("%s \n\n\n",json);
+   //printf("%s \n",j);
+   //return NULL;
+
+   Dictionary *result = newDictionary();
+   Keynode *actual = result->kfirst = newKeynode();
+   int hayHijos = 1;
+
+   char *finalValue = j-1; //Hago esto para dar inicio al bucle
+
+   do
+   {
+      //Guardo el key
+      char *inicioKey = finalValue+3, *finalKey = strstr(inicioKey,"\"");
+      char *llave = (char *) malloc(sizeof(char)*(finalKey-inicioKey)+1);
+      strncpy(llave,inicioKey,finalKey-inicioKey);
+
+      //Guardo el arreglo value (después de corchete que abre)
+      char *iniValue = finalKey+3;
+      finalValue = iniValue;
+
+      //Busco el final del value (apuntando a corchete que cierra)
+      if(*iniValue == '{')
+      {
+         int desbalance = 1;
+
+         while(desbalance)
+         {
+            finalValue++;
+            if(*finalValue == ']')
+               desbalance--;
+            if(*finalValue == '[')
+               desbalance++;
+         }
+      }
+      else
+      {
+         finalValue = strstr(iniValue,"],") ? strstr(iniValue,"],") : strstr(iniValue,"]}");
+      }
+
+      char *value = (char *) malloc(sizeof(char)*(finalValue-iniValue)+1);
+      strncpy(value,iniValue,finalValue-iniValue); //Los value se guardan sin corchetes.
+
+      //Asigno el key en el knode
+      actual->name = llave;
+
+      //Colocando y contando valores
+      int cantElem = 0, hayValores = 1;
+      char *centinelaIni, *centinelaFin, *unvalor;
+      centinelaFin = centinelaIni = value;
+      switch(tipoDatoCadena(value))
+      {
+         case 1:
+         break;
+
+         case 2:
+            actual->tipo = 2;
+            do
+            {
+               if(strstr(centinelaIni,","))
+               {
+                  centinelaFin =  strstr(centinelaIni,",");
+               }
+               else
+               {
+                  centinelaFin = centinelaIni+strlen(centinelaIni);
+                  hayValores = 0;
+               }
+
+               unvalor = (char *) malloc(sizeof(char)*(centinelaFin-centinelaIni)+1);
+               strncpy(unvalor,centinelaIni,centinelaFin-centinelaIni);
+               removerCaracteres(unvalor,"\"");
+
+               actual->sa = (char **) realloc(actual->sa, sizeof(char *)*cantElem+1);
+               actual->sa[cantElem] = unvalor;
+
+               centinelaIni = centinelaFin+1;
+               cantElem++;
+            }while(hayValores);
+         break;
+
+         default: //Caso 3 o 4.
+            do
+            {
+               if(strstr(centinelaIni,","))
+               {
+                  centinelaFin =  strstr(centinelaIni,",");
+               }
+               else
+               {
+                  centinelaFin = centinelaIni+strlen(centinelaIni);
+                  hayValores = 0;
+               }
+
+               unvalor = (char *) malloc(sizeof(char)*(centinelaFin-centinelaIni)+1);
+               strncpy(unvalor,centinelaIni,centinelaFin-centinelaIni);
+
+               if(tipoDatoCadena(unvalor) == 3)
+               {
+                  actual->tipo = 3;
+                  actual->d = (double *) realloc(actual->d, sizeof(double)*cantElem+1);
+                  actual->d[cantElem] = strtod(unvalor,NULL);
+               }
+               if(tipoDatoCadena(unvalor) == 4)
+               {
+                  actual->tipo = 4;
+                  actual->b = (Bool *) realloc(actual->b, sizeof(Bool)*cantElem+1);
+                  if(!strcmp(unvalor,"true")  || !strcmp(unvalor,"True"))
+                     actual->b[cantElem] = true;
+                  if(!strcmp(unvalor,"false") || !strcmp(unvalor,"False"))
+                     actual->b[cantElem] = false;
+               }
+
+               free(unvalor);
+               centinelaIni = centinelaFin+1;
+               cantElem++;
+            }while(hayValores);
+         break;
+      }
+
+      actual->cantElem = cantElem;
+      //Determinando próximo hijo diccionario
+      if(strstr(finalValue,","))
+      {
+         actual->next = newKeynode();
+         actual = actual->next;
+      }
+      else
+      {
+         hayHijos = 0;
+      }
+
+      free(value);
+   }while(hayHijos);
+
+   free(j); //Libero json auxiliar
+   return result;
 }
