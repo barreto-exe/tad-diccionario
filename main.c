@@ -34,7 +34,7 @@ void TestMamaPipe(){
 }
 
 int main(){
-   test2();
+   test3();
    return 0;
 
 }
@@ -79,9 +79,9 @@ void testProfe()
 
 void test2()
 {
-   //dictionaryFromJson("{\"nombre\":\"La tasca\",\"distancia\":30.5,\"abierto\":false,\"gerente\":{\"nombre\":\"Juan\",\"sueldo\":1500.0},\"comentarios\":[\"servicio de primera\",\"perfecto\"]}");
+   Dictionary *a = dictionaryFromJson("{\"nombre\":\"La tasca\",\"distancia\":30.5,\"abierto\":false,\"gerente\":{\"nombre\":\"Juan\",\"sueldo\":1500.0},\"comentarios\":[\"servicio de primera\",\"perfecto\"]}");
 
-   Dictionary *a = dictionaryFromJson("{\"Numero\":[30,20,40,33,33.3],\"Bool\":[false,true,false,true]}");
+   //Dictionary *a = dictionaryFromJson("{\"Numero\":[30,20,40,33,33.3],\"Bool\":[false,true,false,true]}");
 
    Keynode a1 = *a->kfirst, a2 = *a->kfirst->next;
 
@@ -90,5 +90,63 @@ void test2()
    for(int i= 0; i<a2.cantElem; i++)
    {
       Test = a2.b[i];
+   }
+}
+
+void testPuntero()
+{
+   int *p, *f, d = 5;
+
+   *f = d;
+
+   p = (int *) malloc(sizeof(int)*3);
+   for(int i = 0; i<3; i++) p[i] = i;
+
+   //p + 2 = f;
+}
+
+test3()
+{
+   Dictionary *d = dictionaryFromJson("{\"nombre\":\"La tasca\",\"distancia\":30.5,\"abierto\":false,\"gerentes\":[{\"nombre\":\"Juan\",\"sueldo\":1500.0},{\"nombre\":[\"Luis\",\"Barreto\"],\"sueldo\":3500.0}],\"comentarios\":[\"servicio de primera\",\"perfecto\"]}");
+   int a;
+
+   for(Keynode *k = d->kfirst; k; k = k->next)
+   {
+      char *llave = k->name;
+      int cantElem = k->cantElem;
+
+      if(k->tipo == 1)
+      {
+         for(int i=0; i< k->cantElem; i++)
+         {
+            Dictionary gerente = k->D[i];
+            for(Keynode *kg = gerente.kfirst; kg; kg = kg->next)
+            {
+               char *llaveG =  kg->name;
+               int cantElemG = kg->cantElem;
+
+               if(kg->tipo == 3)
+               {
+                  double sueldo;
+                  sueldo = *kg->d;
+                  a = 1;
+               }
+               if(kg->tipo == 2)
+               {
+                  int cantNombres = kg->cantElem;
+
+                  for(int i = 0; i<cantNombres; i++)
+                  {
+                     char *nombre;
+                     nombre = kg->sa[i];
+                     a = 1;
+                  }
+               }
+               a = 1;
+            }
+         }
+      }
+
+      a = 1;
    }
 }

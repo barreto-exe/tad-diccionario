@@ -526,7 +526,16 @@ char *all2Array(const char *json)
       }
       else if(*aux == '[')
       {
-         aux = strstr(aux,"]");
+         //aux = strstr(aux,"]"); //<--- ERROR!!!, No siempre sucede que el siguiente corchete es el indicado.
+         int desbalance = 1;
+         while(desbalance)
+         {
+            aux++;
+            if(*aux == ']')
+               desbalance--;
+            if(*aux == '[')
+               desbalance++;
+         }
       }
       else if(*aux == '{')
       {
@@ -636,6 +645,39 @@ Dictionary *dictionaryFromJson(const char *json)
       switch(tipoDatoCadena(value))
       {
          case 1:
+            actual->tipo = 1;
+            Dictionary *Daux = actual->D, *resultHijo;
+            do
+            {
+               int desbalance = 1;
+               centinelaFin = centinelaIni;
+
+               //Con este bucle centinelaFin apunta al '}' correspondiente.
+               while(desbalance)
+               {
+                  centinelaFin++;
+                  if(*centinelaFin == '{')
+                     desbalance++;
+                  if(*centinelaFin == '}')
+                     desbalance--;
+               }
+
+               unvalor = (char *) malloc(sizeof(char)*(centinelaFin-centinelaIni)+2); //+2 por la llave de cierre y caracter nulo.
+               strncpy(unvalor,centinelaIni,centinelaFin-centinelaIni+1);
+
+               actual->D = (Dictionary *) realloc(actual->D, sizeof(Dictionary)*(cantElem+1));
+
+               resultHijo = dictionaryFromJson(unvalor);
+               Daux = actual->D;
+               Daux += cantElem;
+               *Daux = *resultHijo;
+
+
+               free(resultHijo);
+               free(unvalor);
+               centinelaIni = strstr(centinelaFin,"{");
+               cantElem++;
+            }while(centinelaIni);
          break;
 
          case 2:
@@ -656,7 +698,7 @@ Dictionary *dictionaryFromJson(const char *json)
                strncpy(unvalor,centinelaIni,centinelaFin-centinelaIni);
                removerCaracteres(unvalor,"\"");
 
-               actual->sa = (char **) realloc(actual->sa, sizeof(char *)*cantElem+1);
+               actual->sa = (char **) realloc(actual->sa, sizeof(char *)*(cantElem+1));
                actual->sa[cantElem] = unvalor;
 
                centinelaIni = centinelaFin+1;
