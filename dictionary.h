@@ -1,96 +1,37 @@
 #include<string.h>
 
-typedef enum {true, false} Bool;
+typedef enum {false, true} Bool;
 
 typedef struct key{
    char *name;
 
-   int tipo, cantElem; //Cantidad de elementos (arreglo dinámico)
-   double *d;
-   Bool *b;
-   char *s;
+   int tipo, cantElem;     //Tipo de dato del Keynode, Cantidad de elementos (arreglo dinámico).
+
+   struct dictionary *D;   //Tipo [1]Diccionario.
+   char **sa;              //Tipo [2]Cadena.
+   double *d;              //Tipo [3]Numérico.
+   Bool *b;                //Tipo [4]Booleano.
+
    struct key *next;
 } Keynode;
 
 typedef struct dictionary {
-	char *nombre;
-	Keynode *k;
+	struct key *kfirst;
 } Dictionary;
-
-/*
-   Tipos:
-   0 -> BOOL
-   1 -> Entero
-   2 -> char
-   3 -> array (No se si tener un tipo array sea necesario, casi seguro que no)
-   4 -> Dictionary
-*/
-//Aqui pondre funciones que en caso de ser necesarion moveremos a un .h auxiliar
-
-Keynode *getGeneral(const Dictionary *dictionary, const char *key,Keynode *p,int type,int amount){
-   if(amount == -1){
-      if(strcmp(key,p->name) == 0 && p->tipo == type)
-         return p;
-      if(p->next != NULL)
-         return getGeneral(dictionary,key,p->next,type,p->next->cantElem);
-   }else{
-      for(int i=0; i<amount && p != NULL ; i++){ //No estoy muy seguro como se maneja esa parte de los arreglos dinamicos
-         if(strcmp(key,p->name) == 0 && p->tipo == type)
-            return p;
-         getGeneral(dictionary,key,p->next,type,p->next->cantElem);
-      }
-   }
-   return NULL;
-}
-
-
-//Termina aqui
-
 
 // Creates a new empty dictionary
 Dictionary *newDictionary();
 
 // Saves the number associated to the corresponding key in result.
 // Returns 1 if it was able to get it otherwise returns 0
-int getNumber(const Dictionary *dictionary, const char *key, double *result){
-   if(dictionary == NULL)
-      return 0;
-   Keynode *Aux = dictionary->k;
-   Keynode *p = getGeneral(dictionary,key,Aux,1,dictionary->k->cantElem);
-   if(p == NULL)
-      return 0;
-   else{
-      result = p->d;
-      return 1;
-   }
-}
+int getNumber(const Dictionary *dictionary, const char *key, double *result);
 
 // Saves the boolean associated to the corresponding key in result.
 // Returns 1 if it was able to get it otherwise returns 0
-int getBool(const Dictionary *dictionary, const char *key, Bool *result){
-   if(dictionary == NULL)
-      return 0;
-   Keynode *Aux = dictionary->k;
-   Keynode *p = getGeneral(dictionary,key,Aux,0,dictionary->k->cantElem);
-   if(p == NULL)
-      return 0;
-   else{
-      result = p->b;
-      return 1;
-   }
-}
-// Returns the string associated to the corresponding key, otherwise returns NULL
-char *getString(const Dictionary *dictionary, const char *key){
-   if(dictionary == NULL)
-      return 0;
-   Keynode *Aux = dictionary->k;
-   Keynode *p = getGeneral(dictionary,key,Aux,2,dictionary->k->cantElem);
-   if(p == NULL)
-      return NULL;
-   else
-      return p->s;
+int getBool(const Dictionary *dictionary, const char *key, Bool *result);
 
-}
+// Returns the string associated to the corresponding key, otherwise returns NULL
+char *getString(const Dictionary *dictionary, const char *key);
 
 // Returns the dictionary associated to the corresponding key, otherwise returns NULL
 Dictionary *getDictionary(const Dictionary *dictionary, const char *key);
@@ -102,6 +43,7 @@ double *getNumberArray(const Dictionary *dictionary, const char *key, int *sizeR
 Bool *getBoolArray(const Dictionary *dictionary, const char *key, int *sizeResult);
 
 // Returns the array of strings associated to the corresponding key, otherwise returns NULL
+
 char **getStringArray(const Dictionary *dictionary, const char *key, int *sizeResult);
 
 // Returns the array of dictionaries associated to the corresponding key, otherwise returns NULL
