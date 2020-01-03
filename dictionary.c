@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+
 Dictionary *newDictionary()
 {
    Dictionary *d = (Dictionary *) malloc(sizeof(Dictionary));
@@ -61,21 +62,8 @@ void removerCaracteres(char *cadena, char *caracteres) {
 }
 
 Keynode *getGeneral(const Dictionary *dictionary, const char *key,Keynode *p,int type,int amount){
-   int tiposAux = p->tipo;
-   char KeyAux[30];
-   strcpy(KeyAux,p->name);
    if(strcmp(key,p->name) == 0 && p->tipo == type)
       return p;
-
-   if(p->D != NULL){
-      Dictionary *DiccionarioHijo = p->D;
-      Keynode *PrimerNodoDeDiccionarioHijo = p->D->kfirst;
-
-      //Keynode a = *(p->D->kfirst), b = *p; //Esto es para probar
-
-      return getGeneral(p->D,key,p->D->kfirst,type,p->D->kfirst->cantElem);
-   }
-
    if(p->next == NULL)
       return NULL;
    return getGeneral(dictionary,key,p->next,type,p->next->cantElem);
@@ -114,7 +102,7 @@ int getNumber(const Dictionary *dictionary, const char *key, double *result){
    if(p == NULL)
       return 0;
    else{
-      *result = *p->d; //Listo
+      *result = *p->d;
       return 1;
    }
 }
@@ -140,13 +128,10 @@ char *getString(const Dictionary *dictionary, const char *key){
    if(p == NULL)
       return NULL;
    else{
-      char AuxString[30];
-      strcpy(AuxString,*p->sa);
-      return *p->sa;
-
+      char *result = (char *) malloc(sizeof(char)*strlen(*p->sa)+1);
+      strcpy(result,*p->sa);
+      return result;
    }
-
-
 }
 
 Dictionary *getDictionary(const Dictionary *dictionary, const char *key){
@@ -156,8 +141,12 @@ Dictionary *getDictionary(const Dictionary *dictionary, const char *key){
    Keynode *p = getGeneral(dictionary,key,Aux,1,dictionary->kfirst->cantElem);
    if(p == NULL)
       return NULL;
-   else
-      return p->D;
+   else{
+      Dictionary *result = (Dictionary *) malloc(sizeof(Dictionary));
+      *result = *p->D;
+
+      return result;
+   }
 
 }
 
@@ -170,7 +159,7 @@ double *getNumberArray(const Dictionary *dictionary, const char *key, int *sizeR
       return NULL;
    else{
       double *result = (double *) malloc(sizeof(double)*p->cantElem);
-      for(int i=0;i<p->cantElem-1;i++)
+      for(int i=0;i<p->cantElem;i++)   //Por que con el cantElemn-1 no funciona bien?
          result[i] = p->d[i];
       *sizeResult = p->cantElem;
       return result;
@@ -186,8 +175,45 @@ Bool *getBoolArray(const Dictionary *dictionary, const char *key, int *sizeResul
       return NULL;
    else{
       Bool *result = (Bool *) malloc(sizeof(Bool)*p->cantElem);
-      for(int i=0;i<p->cantElem-1;i++)
-         result[i] = p->d[i];
+      int size = p->cantElem;
+      for(int i=0;i<p->cantElem;i++)
+         result[i] = p->b[i];
+      *sizeResult = p->cantElem;
+      return result;
+   }
+}
+
+char **getStringArray(const Dictionary *dictionary, const char *key, int *sizeResult){
+   if(dictionary == NULL)
+      return NULL;
+   Keynode *Aux = dictionary->kfirst;
+   Keynode *p = getGeneral(dictionary,key,Aux,2,dictionary->kfirst->cantElem);
+   if(p == NULL)
+      return NULL;
+   else{
+      char **result = (char **) malloc(sizeof(char *)*p->cantElem);
+      for(int i=0;i<p->cantElem;i++){
+         result[i] = (char *) malloc(sizeof(char)*strlen(p->sa[i])+1);
+         strcpy(result[i],p->sa[i]);//Se esta recorriendo bien?
+      }
+      *sizeResult = p->cantElem;
+      return result;
+   }
+}
+
+Dictionary **getDictionaryArray(const Dictionary *dictionary, const char *key, int *sizeResult){
+   if(dictionary == NULL)
+      return NULL;
+   Keynode *Aux = dictionary->kfirst;
+   Keynode *p = getGeneral(dictionary,key,Aux,1,dictionary->kfirst->cantElem);
+   if(p == NULL)
+      return NULL;
+   else{
+      Dictionary **result = (Dictionary **) malloc(sizeof(Dictionary *)*p->cantElem);
+      for(int i=0; i<p->cantElem ; i++){
+         result = (Dictionary *) malloc(sizeof(Dictionary));
+         *result[i] = p->D[i];
+      }
       *sizeResult = p->cantElem;
       return result;
    }
@@ -255,7 +281,7 @@ int setBoolArray(Dictionary *d, const char *key, int size, Bool value[size])
    }
    newk->b = newValue;
 
-   newk->cantElem = 1;
+   newk->cantElem = size;
    newk->tipo = 4;
    newk->next = NULL;
 
@@ -762,4 +788,66 @@ Dictionary *dictionaryFromJson(const char *json)
 
    free(j); //Libero json auxiliar
    return result;
+}
+
+void PutOnCommas(char *Result,int Remaining, int Actual){
+   if(Remaining == Actual+1)
+      return;
+   strcat(Result,",");
+   return;
+}
+
+void DictionaryAJson(char *Result,Keynode *p){
+   if(p == NULL)
+      return;
+   int type = p->tipo;
+   strcat(Result,"\"");
+   strcat(Result,p->name);
+   strcat(Result,"\":");
+   if(p->cantElem >1)
+      strcat(Result,"[");
+   if(type == 1){
+      for(int i=0; i<p->cantElem; i++){
+         strcat(Result,"{");
+         DictionaryAJson(Result,p->D->kfirst);  //Como hago para que recorra el arreglo de dictionary
+         strcat(Result,"}");
+         PutOnCommas(Result,p->cantElem,i);
+      }
+   }else if(type == 2){
+      for(int i=0; i<p->cantElem; i++){
+         strcat(Result,"\"");
+         strcat(Result,p->sa[i]);
+         strcat(Result,"\"");
+         PutOnCommas(Result,p->cantElem,i);
+      }
+   }else if(type == 3){
+      for(int i=0; i<p->cantElem; i++){
+         char Elem[200];
+         gcvt(p->d[i],10,Elem);
+         strcat(Result,Elem);
+         PutOnCommas(Result,p->cantElem,i);
+      }
+   }else if(type == 4){
+      for(int i=0 ; i<p->cantElem ; i++){
+         int size = p->cantElem;
+         if(p->b[i])
+            strcat(Result,"True");
+         else
+            strcat(Result,"False");
+         PutOnCommas(Result,p->cantElem,i);
+      }
+   }
+   if(p->cantElem >1)
+      strcat(Result,"]");
+   if(p->next != NULL)
+      strcat(Result,",");
+   DictionaryAJson(Result,p->next);
+}
+
+char *jsonFromDictionary(const Dictionary *dictionary){
+   char *Result = (char *) malloc(sizeof(char)*1024);
+   strcat(Result,"{");
+   DictionaryAJson(Result,dictionary->kfirst);
+   strcat(Result,"}");
+   printf("%s",Result);
 }
