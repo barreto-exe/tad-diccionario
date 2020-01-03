@@ -634,6 +634,7 @@ Dictionary *dictionaryFromJson(const char *json)
       char *inicioKey = finalValue+3, *finalKey = strstr(inicioKey,"\"");
       char *llave = (char *) malloc(sizeof(char)*(finalKey-inicioKey)+1);
       strncpy(llave,inicioKey,finalKey-inicioKey);
+      llave[finalKey-inicioKey] = '\0';
 
       //Guardo el arreglo value (después de corchete que abre)
       char *iniValue = finalKey+3;

@@ -69,7 +69,7 @@ void TestMamaPipeTheComeback(){
    jsonFromDictionary(d);
 }
 int main(){
-   test3();
+   test4();
    return 0;
 }
 
@@ -183,4 +183,19 @@ test3()
 
       a = 1;
    }
+}
+
+test4()
+{
+   Dictionary *d = dictionaryFromJson("{\"nombre\":\"La tasca\",\"distancia\":30.5,\"cant\":20,\"abierto\":false,\"gerentes\":[{\"nombre\":\"Juan\",\"sueldo\":1500.0},{\"nombre\":[\"Luis\",\"Barreto\"],\"sueldo\":3500.0}],\"comentarios\":[\"servicio de primera\",\"perfecto\"]}");
+
+   Dictionary a = *d;
+   Keynode *k = a.kfirst;
+
+   while(k)
+   {
+      Keynode kk = *k;
+      k = k->next;
+   }
+
 }
