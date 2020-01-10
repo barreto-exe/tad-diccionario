@@ -101,13 +101,13 @@ void testProfe()
 	double v1,v2;
 
 	d1 = newDictionary();
-	//d2 = dictionaryFromJson("{\"name\":\"camera\",\"price\":25.8}");
+	d2 = dictionaryFromJson("{\"name\":\"camera\",\"price\":25.8}");
 
-	//setNumber(d1,"value",30.5);
+	setNumber(d1,"value",30.5);
 
-	//if(getNumber(d1,"value",&v1) && getNumber(d2,"price",&v2) && v1 == v2) {
+	if(getNumber(d1,"value",&v1) && getNumber(d2,"price",&v2) && v1 == v2) {
 		printf("iguales\n");
-	//}
+	}
 }
 
 
@@ -189,13 +189,18 @@ test4()
 {
    Dictionary *d = dictionaryFromJson("{\"nombre\":\"La tasca\",\"distancia\":30.5,\"cant\":20,\"abierto\":false,\"gerentes\":[{\"nombre\":\"Juan\",\"sueldo\":1500.0},{\"nombre\":[\"Luis\",\"Barreto\"],\"sueldo\":3500.0}],\"comentarios\":[\"servicio de primera\",\"perfecto\"]}");
 
-   Dictionary a = *d;
-   Keynode *k = a.kfirst;
+   int size;
+   Dictionary **gerentes = getDictionaryArray(d,"gerentes",&size);
 
-   while(k)
+   for(int i = 0; i < size; i++)
    {
-      Keynode kk = *k;
-      k = k->next;
-   }
+      Dictionary a = *gerentes[i];
+      Keynode *k = a.kfirst;
 
+      while(k)
+      {
+         Keynode kk = *k;
+         k = k->next;
+      }
+   }
 }

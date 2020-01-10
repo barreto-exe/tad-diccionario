@@ -8,8 +8,7 @@ Dictionary *newDictionary()
    Dictionary *d = (Dictionary *) malloc(sizeof(Dictionary));
    if(!d)
    {
-      printf("Error en reserva de memoria. \n");
-      exit -1;
+      return NULL;
    }
 
    d->kfirst = NULL;
@@ -22,15 +21,71 @@ Keynode *newKeynode()
 
    if(!k)
    {
-      printf("Error en reserva de memoria. \n");
-      exit -1;
+      return NULL;
    }
 
    k->cantElem = k->tipo = 0;
-   k->name = k->next = NULL;
-   k->b = k->d = k->sa = k->D = NULL;
+   k->name = NULL;
+   k->next = NULL;
+   k->b = NULL;
+   k->d = NULL;
+   k->sa = NULL;
+   k->D = NULL;
 
    return k;
+}
+
+void freeKey(Keynode *k)
+{
+   //Primero hago free del valor.
+   switch(k->tipo)
+   {
+      //Dictionary
+      case 1:
+         freeDictionary(k->D);
+      break;
+
+      //Cadena
+      case 2:
+         for(int i=0; i<k->cantElem; i++)
+         {
+            free(k->sa[i]);
+         }
+         free(k->sa);
+      break;
+
+      //Numerico
+      case 3:
+         free(k->d);
+      break;
+
+      //Bool
+      case 4:
+         free(k->b);
+      break;
+   }
+
+   //Luego free del nombre
+   free(k->name);
+
+   //Por ultimo free del nodo
+   free(k);
+}
+
+void freeDictionary(Dictionary *d)
+{
+   Keynode *kaux = d->kfirst, *borrado;
+
+   //Hago free de todas las llaves.
+   while(kaux)
+   {
+      borrado = kaux;
+      kaux = kaux->next;
+      freeKey(borrado);
+   }
+
+   //Hago free del diccionario
+   free(d);
 }
 
 void removerCaracteres(char *cadena, char *caracteres) {
@@ -95,47 +150,49 @@ Keynode *buscaGeneral(Dictionary *d, const char *k, Keynode *keyAnterior)
 }
 
 int getNumber(const Dictionary *dictionary, const char *key, double *result){
-   if(dictionary == NULL)
+   if(!dictionary || !key)
       return 0;
    Keynode *Aux = dictionary->kfirst;
    Keynode *p = getGeneral(dictionary,key,Aux,3,dictionary->kfirst->cantElem);
    if(p == NULL)
       return 0;
    else{
-      *result = *p->d;
+      if(result)
+         *result = *p->d;
       return 1;
    }
 }
 
 int getBool(const Dictionary *dictionary, const char *key, Bool *result){
-   if(dictionary == NULL)
+   if(!dictionary || !key)
       return 0;
    Keynode *Aux = dictionary->kfirst;
    Keynode *p = getGeneral(dictionary,key,Aux,4,dictionary->kfirst->cantElem);
    if(p == NULL)
       return 0;
    else{
-      *result = *p->b;
+      if(result)
+         *result = *p->b;
       return 1;
    }
 }
 
 char *getString(const Dictionary *dictionary, const char *key){
-   if(dictionary == NULL)
+   if(!dictionary || !key)
       return NULL;
    Keynode *Aux = dictionary->kfirst;
    Keynode *p = getGeneral(dictionary,key,Aux,2,dictionary->kfirst->cantElem);
    if(p == NULL)
       return NULL;
    else{
-      char *result = (char *) malloc(sizeof(char)*strlen(*p->sa)+1);
+      char *result = (char *) malloc(sizeof(char)*(strlen(*p->sa)+1));
       strcpy(result,*p->sa);
       return result;
    }
 }
 
 Dictionary *getDictionary(const Dictionary *dictionary, const char *key){
-   if(dictionary == NULL)
+   if(!dictionary || !key)
       return NULL;
    Keynode *Aux = dictionary->kfirst;
    Keynode *p = getGeneral(dictionary,key,Aux,1,dictionary->kfirst->cantElem);
@@ -151,7 +208,7 @@ Dictionary *getDictionary(const Dictionary *dictionary, const char *key){
 }
 
 double *getNumberArray(const Dictionary *dictionary, const char *key, int *sizeResult){
-   if(dictionary == NULL)
+   if(!dictionary || !key)
       return NULL;
    Keynode *Aux = dictionary->kfirst;
    Keynode *p = getGeneral(dictionary,key,Aux,3,dictionary->kfirst->cantElem);
@@ -159,15 +216,16 @@ double *getNumberArray(const Dictionary *dictionary, const char *key, int *sizeR
       return NULL;
    else{
       double *result = (double *) malloc(sizeof(double)*p->cantElem);
-      for(int i=0;i<p->cantElem;i++)   //Por que con el cantElemn-1 no funciona bien?
+      for(int i=0;i<p->cantElem;i++)
          result[i] = p->d[i];
-      *sizeResult = p->cantElem;
+      if(sizeResult)
+         *sizeResult = p->cantElem;
       return result;
    }
 }
 
 Bool *getBoolArray(const Dictionary *dictionary, const char *key, int *sizeResult){
-   if(dictionary == NULL)
+   if(!dictionary || !key)
       return NULL;
    Keynode *Aux = dictionary->kfirst;
    Keynode *p = getGeneral(dictionary,key,Aux,4,dictionary->kfirst->cantElem);
@@ -175,16 +233,16 @@ Bool *getBoolArray(const Dictionary *dictionary, const char *key, int *sizeResul
       return NULL;
    else{
       Bool *result = (Bool *) malloc(sizeof(Bool)*p->cantElem);
-      int size = p->cantElem;
       for(int i=0;i<p->cantElem;i++)
          result[i] = p->b[i];
-      *sizeResult = p->cantElem;
+      if(sizeResult)
+         *sizeResult = p->cantElem;
       return result;
    }
 }
 
 char **getStringArray(const Dictionary *dictionary, const char *key, int *sizeResult){
-   if(dictionary == NULL)
+   if(!dictionary || !key)
       return NULL;
    Keynode *Aux = dictionary->kfirst;
    Keynode *p = getGeneral(dictionary,key,Aux,2,dictionary->kfirst->cantElem);
@@ -193,16 +251,17 @@ char **getStringArray(const Dictionary *dictionary, const char *key, int *sizeRe
    else{
       char **result = (char **) malloc(sizeof(char *)*p->cantElem);
       for(int i=0;i<p->cantElem;i++){
-         result[i] = (char *) malloc(sizeof(char)*strlen(p->sa[i])+1);
-         strcpy(result[i],p->sa[i]);//Se esta recorriendo bien?
+         result[i] = (char *) malloc(sizeof(char)*strlen((p->sa[i])+1));
+         strcpy(result[i],p->sa[i]);
       }
-      *sizeResult = p->cantElem;
+      if(sizeResult)
+         *sizeResult = p->cantElem;
       return result;
    }
 }
 
 Dictionary **getDictionaryArray(const Dictionary *dictionary, const char *key, int *sizeResult){
-   if(dictionary == NULL)
+   if(!dictionary || !key)
       return NULL;
    Keynode *Aux = dictionary->kfirst;
    Keynode *p = getGeneral(dictionary,key,Aux,1,dictionary->kfirst->cantElem);
@@ -211,22 +270,31 @@ Dictionary **getDictionaryArray(const Dictionary *dictionary, const char *key, i
    else{
       Dictionary **result = (Dictionary **) malloc(sizeof(Dictionary *)*p->cantElem);
       for(int i=0; i<p->cantElem ; i++){
-         result = (Dictionary *) malloc(sizeof(Dictionary));
+         result[i] = (Dictionary *) malloc(sizeof(Dictionary));
          *result[i] = p->D[i];
       }
-      *sizeResult = p->cantElem;
+      if(sizeResult)
+         *sizeResult = p->cantElem;
       return result;
    }
 }
 
 int setNumberArray(Dictionary *d, const char *key, int size, double value[size])
 {
-   if(!d) return 0;
+   if(!d || !value || !key || size < 1) return 0;
 
-   Keynode *newk = (Keynode *) malloc(sizeof(Keynode));
+   Keynode *newk;
+   newk = buscaGeneral(d,key,NULL);
+   if(newk)
+   {
+      freeKey(newk); //Borro la llave, si existe
+   }
+
+   newk = (Keynode *) malloc(sizeof(Keynode));
+
 
    //Reservo espacio para el nombre, para evitar apuntar al const key.
-   char *name = (char *) malloc(sizeof(char)*strlen(key)+1);
+   char *name = (char *) malloc(sizeof(char)*(strlen(key)+1));
    strcpy(name,key);
    newk->name = name;
 
@@ -264,12 +332,20 @@ int setNumber(Dictionary *d, const char *key, double value)
 
 int setBoolArray(Dictionary *d, const char *key, int size, Bool value[size])
 {
-   if(!d) return 0;
+   if(!d || !value || !key || size < 1) return 0;
 
-   Keynode *newk = (Keynode *) malloc(sizeof(Keynode));
+   Keynode *newk;
+
+   newk = buscaGeneral(d,key,NULL);
+   if(newk)
+   {
+      freeKey(newk); //Borro la llave, si existe
+   }
+
+   newk = (Keynode *) malloc(sizeof(Keynode));
 
    //Reservo espacio para el nombre, para evitar apuntar al const key.
-   char *name = (char *) malloc(sizeof(char)*strlen(key)+1);
+   char *name = (char *) malloc(sizeof(char)*(strlen(key)+1));
    strcpy(name,key);
    newk->name = name;
 
@@ -303,17 +379,25 @@ int setBoolArray(Dictionary *d, const char *key, int size, Bool value[size])
 int setBool(Dictionary *d, const char *key, Bool value)
 {
    Bool val[] = {value};
-   setBoolArray(d,key,1,val);
+   return setBoolArray(d,key,1,val);
 }
 
 int setStringArray(Dictionary *d, const char *key, int size, char *value[size])
 {
-   if(!d) return 0;
+   if(!d || !value || !*value || !key || size < 1) return 0;
 
-   Keynode *newk = (Keynode *) malloc(sizeof(Keynode));
+   Keynode *newk;
+
+   newk = buscaGeneral(d,key,NULL);
+   if(newk)
+   {
+      freeKey(newk); //Borro la llave, si existe
+   }
+
+   newk = (Keynode *) malloc(sizeof(Keynode));
 
    //Reservo espacio para el nombre, para evitar apuntar al const key.
-   char *name = (char *) malloc(sizeof(char)*strlen(key)+1);
+   char *name = (char *) malloc(sizeof(char)*(strlen(key)+1));
    strcpy(name,key);
    newk->name = name;
 
@@ -321,7 +405,7 @@ int setStringArray(Dictionary *d, const char *key, int size, char *value[size])
    char **newValue = (char **) malloc(sizeof(char *)*size);
    for(int i=0; i<size; i++)
    {
-      newValue[i] = (char *) malloc(sizeof(char)*strlen(value[i])+1);
+      newValue[i] = (char *) malloc(sizeof(char)*(strlen(value[i])+1));
       strcpy(newValue[i],value[i]);
    }
 
@@ -347,24 +431,34 @@ int setStringArray(Dictionary *d, const char *key, int size, char *value[size])
 
 int setString(Dictionary *d, const char *key, const char *value)
 {
+   if(!d || !value || !key) return 0;
+
    char *val[] = {value};
-   setStringArray(d,key,1,val);
+   return setStringArray(d,key,1,val);
 }
 
 int setDictionaryArray(Dictionary *d, const char *key, int size, Dictionary *value[size])
 //Coloqué muchos comentarios en esta función porque es más o menos confusa.
 {
-   if(!d) return 0;
+   if(!d || !value || !*value || !key || size < 1) return 0;
 
-   Keynode *newk = (Keynode *) malloc(sizeof(Keynode));
+   Keynode *newk;
+
+   newk = buscaGeneral(d,key,NULL);
+   if(newk)
+   {
+      freeKey(newk); //Borro la llave, si existe
+   }
+
+   newk = (Keynode *) malloc(sizeof(Keynode));
 
    //Reservo espacio para el nombre, para evitar apuntar al const key.
-   char *name = (char *) malloc(sizeof(char)*strlen(key)+1);
+   char *name = (char *) malloc(sizeof(char)*(strlen(key)+1));
    strcpy(name,key);
    newk->name = name;
 
    //Reservo espacio para la estructura que será hija de Dictionary d.
-   Dictionary **newValue = (Dictionary **) malloc(sizeof(Dictionary)*size);
+   Dictionary **newValue = (Dictionary **) malloc(sizeof(Dictionary *)*size);
 
    for(int i=0; i<size;i++)
    {
@@ -383,15 +477,11 @@ int setDictionaryArray(Dictionary *d, const char *key, int size, Dictionary *val
       Keynode *primerNodoNew = newValueAux->kfirst;
       *primerNodoNew =  *recorreValue; //No considero que recorreValue (dicionario) sea nulo, el profe dijo que eso no pasaría xd.
 
-      //Keynode a = *primerNodoNew, b = *recorreValue; //Esto es para probar
-
      //Hago copia de todos los Keynodes en newValue
       Keynode *recorreNew = newValueAux->kfirst;
 
       while(recorreValue->next)
       {
-         //Keynode a = *recorreValue; //Esto es para probar
-
          recorreValue = recorreValue->next;
          recorreNew->next = (Keynode *) malloc(sizeof(Keynode));
          *recorreNew->next = *recorreValue;
@@ -420,71 +510,17 @@ int setDictionaryArray(Dictionary *d, const char *key, int size, Dictionary *val
 
 int setDictionary(Dictionary *d, const char *key, Dictionary *value)
 {
-   //Dictionary a = *value; //Esto es para probar
-   //Keynode k = *value->kfirst->next;
+   if(!d || !value || !key) return 0;
 
    Dictionary *val[] = {value};
-   setDictionaryArray(d,key,1,val);
-}
-
-void freeDictionary(Dictionary *d)
-{
-   Keynode *kaux = d->kfirst;
-
-   //Hago free de todas las llaves.
-   while(kaux)
-   {
-      Keynode *borrado = kaux;
-      kaux = kaux->next;
-      freeKey(borrado);
-   }
-
-   //Hago free del diccionario
-   free(d);
-}
-
-void freeKey(Keynode *k)
-{
-   //Primero hago free del valor.
-   switch(k->tipo)
-   {
-      //Dictionary
-      case 1:
-         freeDictionary(k->D);
-      break;
-
-      //Cadena
-      case 2:
-         for(int i=0; i<k->cantElem; i++)
-         {
-            free(k->sa[i]);
-         }
-         free(k->sa);
-      break;
-
-      //Numerico
-      case 3:
-         free(k->d);
-      break;
-
-      //Bool
-      case 4:
-         free(k->b);
-      break;
-   }
-
-   //Luego free del nombre
-   free(k->name);
-
-   //Por ultimo free del nodo
-   free(k);
+   return setDictionaryArray(d,key,1,val);
 }
 
 int removeElement(Dictionary *d, const char *key)
 {
-   Keynode *anterior = NULL, *borrado = NULL;
+   Keynode *anterior = NULL, *borrado = buscaGeneral(d,key,anterior);
 
-   if(borrado = buscaGeneral(d,key,anterior))
+   if(borrado)
    {
       if(anterior)
       {
@@ -512,15 +548,21 @@ int tipoDatoCadena(const char *s)
       [2] String.
       [3] Numérico.
       [4] Bool.
+
+      También ayuda a validar el formato del json.
    */
 
-   int tipo = 4; //Si no entra en ninguna condicion, es bool.
+   int tipo = 0;
    switch(s[0])
    {
       case '{': tipo = 1; break;
       case '"': tipo = 2; break;
    }
-   if(s[0]>='0' && s[0]<= '9') tipo=3;
+   if(s[0]>='0' && s[0]<= '9')
+      tipo=3;
+
+   if(!strcmp(s,"True") || !strcmp(s,"true") || !strcmp(s,"False") || !strcmp(s,"false"))
+      tipo = 4;
 
    return tipo;
 }
@@ -528,7 +570,7 @@ int tipoDatoCadena(const char *s)
 char *all2Array(const char *json)
 //Copia el json y mete a todos los valores en arreglos, incluso si es un sólo elemento.
 {
-   char *result = (char *) malloc(sizeof(char)*strlen(json)+30);
+   char *result = (char *) malloc(sizeof(char)*(strlen(json)+30));
    strcpy(result,json);
 
    char copia[1024];
@@ -552,7 +594,6 @@ char *all2Array(const char *json)
       }
       else if(*aux == '[')
       {
-         //aux = strstr(aux,"]"); //<--- ERROR!!!, No siempre sucede que el siguiente corchete es el indicado.
          int desbalance = 1;
          while(desbalance)
          {
@@ -592,12 +633,12 @@ char *all2Array(const char *json)
          strcpy(finalDicc,copia);
          finalDicc--; //Esto queda apuntando a corchete cierra.
 
-         char *jsonAux = (char *) malloc(sizeof(char)*(finalDicc-iniDicc)+1);
+         char *jsonAux = (char *) malloc(sizeof(char)*((finalDicc-iniDicc)+1));
          strncpy(jsonAux,iniDicc,finalDicc-iniDicc);
 
          char *jsonAuxArray = all2Array(jsonAux);
 
-         char finalCad[1024]; //Guardo todo lo que estas despues de llave cierre.
+         char finalCad[1024]; //Guardo todo lo que esta despues de llave cierre.
          strcpy(finalCad,finalDicc);
 
          strcpy(iniDicc,jsonAuxArray);   //Pego el json convertido.
@@ -615,24 +656,66 @@ char *all2Array(const char *json)
    return result;
 }
 
+int balanceJson(const char *j)
+{
+
+   int contAbre = 0, contCierra = 0, condiciones = 3;
+
+   //VALIDANDO CORCHETES
+   for(int i=0; i<strlen(j); i++)
+      if(j[i] == '[') contAbre++;
+
+   for(int i=0; i<strlen(j); i++)
+      if(j[i] == ']') contCierra++;
+
+   if(contAbre == contCierra)
+      condiciones--;
+
+   contAbre = 0;
+   contCierra = 0;
+
+   //VALIDANDO LLAVES
+   for(int i=0; i<strlen(j); i++)
+      if(j[i] == '{') contAbre++;
+
+   for(int i=0; i<strlen(j); i++)
+      if(j[i] == '}') contCierra++;
+
+   if(contAbre == contCierra)
+      condiciones--;
+
+   contAbre = 0;
+   //VALIDANDO COMILLAS
+   for(int i=0; i<strlen(j); i++)
+      if(j[i] == '"') contAbre++; //Debe ser par
+
+   if(contAbre % 2 == 0)
+      condiciones--;
+
+   return condiciones ? 0 : 1;
+}
+
 Dictionary *dictionaryFromJson(const char *json)
 {
+   if(!json || !balanceJson(json)) return NULL;
+
    char *j = all2Array(json);
-   //printf("%s \n\n\n",json);
-   //printf("%s \n",j);
-   //return NULL;
 
    Dictionary *result = newDictionary();
    Keynode *actual = result->kfirst = newKeynode();
    int hayHijos = 1;
 
+   //Si en el proceso algo falla, esto me indica que
+   //debo parar bucle, retornar NULL y liberar memoria.
+   int abortar = 0;
+
    char *finalValue = j-1; //Hago esto para dar inicio al bucle
 
-   do
+   while(hayHijos && !abortar)
    {
       //Guardo el key
       char *inicioKey = finalValue+3, *finalKey = strstr(inicioKey,"\"");
-      char *llave = (char *) malloc(sizeof(char)*(finalKey-inicioKey)+1);
+      char *llave = (char *) malloc(sizeof(char)*((finalKey-inicioKey)+1));
       strncpy(llave,inicioKey,finalKey-inicioKey);
       llave[finalKey-inicioKey] = '\0';
 
@@ -659,7 +742,7 @@ Dictionary *dictionaryFromJson(const char *json)
          finalValue = strstr(iniValue,"],") ? strstr(iniValue,"],") : strstr(iniValue,"]}");
       }
 
-      char *value = (char *) malloc(sizeof(char)*(finalValue-iniValue)+1);
+      char *value = (char *) malloc(sizeof(char)*((finalValue-iniValue)+1));
       strncpy(value,iniValue,finalValue-iniValue); //Los value se guardan sin corchetes.
 
       //Asigno el key en el knode
@@ -689,7 +772,7 @@ Dictionary *dictionaryFromJson(const char *json)
                      desbalance--;
                }
 
-               unvalor = (char *) malloc(sizeof(char)*(centinelaFin-centinelaIni)+2); //+2 por la llave de cierre y caracter nulo.
+               unvalor = (char *) malloc(sizeof(char)*((centinelaFin-centinelaIni)+2)); //+2 por la llave de cierre y caracter nulo.
                strncpy(unvalor,centinelaIni,centinelaFin-centinelaIni+1);
 
                actual->D = (Dictionary *) realloc(actual->D, sizeof(Dictionary)*(cantElem+1));
@@ -721,7 +804,7 @@ Dictionary *dictionaryFromJson(const char *json)
                   hayValores = 0;
                }
 
-               unvalor = (char *) malloc(sizeof(char)*(centinelaFin-centinelaIni)+1);
+               unvalor = (char *) malloc(sizeof(char)*((centinelaFin-centinelaIni)+1));
                strncpy(unvalor,centinelaIni,centinelaFin-centinelaIni);
                removerCaracteres(unvalor,"\"");
 
@@ -746,7 +829,7 @@ Dictionary *dictionaryFromJson(const char *json)
                   hayValores = 0;
                }
 
-               unvalor = (char *) malloc(sizeof(char)*(centinelaFin-centinelaIni)+1);
+               unvalor = (char *) malloc(sizeof(char)*((centinelaFin-centinelaIni)+1));
                strncpy(unvalor,centinelaIni,centinelaFin-centinelaIni);
 
                if(tipoDatoCadena(unvalor) == 3)
@@ -755,7 +838,7 @@ Dictionary *dictionaryFromJson(const char *json)
                   actual->d = (double *) realloc(actual->d, sizeof(double)*cantElem+1);
                   actual->d[cantElem] = strtod(unvalor,NULL);
                }
-               if(tipoDatoCadena(unvalor) == 4)
+               else if(tipoDatoCadena(unvalor) == 4)
                {
                   actual->tipo = 4;
                   actual->b = (Bool *) realloc(actual->b, sizeof(Bool)*cantElem+1);
@@ -763,6 +846,10 @@ Dictionary *dictionaryFromJson(const char *json)
                      actual->b[cantElem] = true;
                   if(!strcmp(unvalor,"false") || !strcmp(unvalor,"False"))
                      actual->b[cantElem] = false;
+               }
+               else
+               {
+                  abortar = 1;
                }
 
                free(unvalor);
@@ -785,9 +872,16 @@ Dictionary *dictionaryFromJson(const char *json)
       }
 
       free(value);
-   }while(hayHijos);
+   }
 
    free(j); //Libero json auxiliar
+
+   if(abortar)
+   {
+      freeDictionary(result);
+      return NULL;
+   }
+
    return result;
 }
 
@@ -810,7 +904,7 @@ void DictionaryAJson(char *Result,Keynode *p){
    if(type == 1){
       for(int i=0; i<p->cantElem; i++){
          strcat(Result,"{");
-         DictionaryAJson(Result,p->D->kfirst);  //Como hago para que recorra el arreglo de dictionary
+         DictionaryAJson(Result,p->D->kfirst);
          strcat(Result,"}");
          PutOnCommas(Result,p->cantElem,i);
       }
@@ -830,11 +924,10 @@ void DictionaryAJson(char *Result,Keynode *p){
       }
    }else if(type == 4){
       for(int i=0 ; i<p->cantElem ; i++){
-         int size = p->cantElem;
-         if(p->b[i])
-            strcat(Result,"True");
+         if(p->b[i] == true)
+            strcat(Result,"true");
          else
-            strcat(Result,"False");
+            strcat(Result,"false");
          PutOnCommas(Result,p->cantElem,i);
       }
    }
@@ -846,9 +939,12 @@ void DictionaryAJson(char *Result,Keynode *p){
 }
 
 char *jsonFromDictionary(const Dictionary *dictionary){
+   if(!dictionary || !dictionary->kfirst || dictionary->kfirst->cantElem < 1) return NULL;
+
    char *Result = (char *) malloc(sizeof(char)*1024);
    strcat(Result,"{");
    DictionaryAJson(Result,dictionary->kfirst);
    strcat(Result,"}");
-   printf("%s",Result);
+
+   return Result;
 }

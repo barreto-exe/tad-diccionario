@@ -1,6 +1,7 @@
-#include<string.h>
+#include <string.h>
+#include <stdlib.h>
 
-typedef enum {false, true} Bool;
+typedef enum {true, false} Bool;
 
 typedef struct key{
    char *name;
