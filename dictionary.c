@@ -1,7 +1,4 @@
 #include "dictionary.h"
-#include <stdlib.h>
-#include <string.h>
-
 
 Dictionary *newDictionary()
 {
@@ -284,7 +281,7 @@ int setNumberArray(Dictionary *d, const char *key, int size, double value[size])
    if(!d || !value || !key || size < 1) return 0;
 
    Keynode *newk;
-   newk = buscaGeneral(d,key,NULL);
+   newk = d->kfirst ? buscaGeneral(d,key,NULL) : NULL;
    if(newk)
    {
       freeKey(newk); //Borro la llave, si existe
@@ -336,7 +333,7 @@ int setBoolArray(Dictionary *d, const char *key, int size, Bool value[size])
 
    Keynode *newk;
 
-   newk = buscaGeneral(d,key,NULL);
+   newk = d->kfirst ? buscaGeneral(d,key,NULL) : NULL;
    if(newk)
    {
       freeKey(newk); //Borro la llave, si existe
@@ -388,7 +385,7 @@ int setStringArray(Dictionary *d, const char *key, int size, char *value[size])
 
    Keynode *newk;
 
-   newk = buscaGeneral(d,key,NULL);
+   newk = d->kfirst ? buscaGeneral(d,key,NULL) : NULL;
    if(newk)
    {
       freeKey(newk); //Borro la llave, si existe
@@ -444,7 +441,7 @@ int setDictionaryArray(Dictionary *d, const char *key, int size, Dictionary *val
 
    Keynode *newk;
 
-   newk = buscaGeneral(d,key,NULL);
+   newk = d->kfirst ? buscaGeneral(d,key,NULL) : NULL;
    if(newk)
    {
       freeKey(newk); //Borro la llave, si existe
